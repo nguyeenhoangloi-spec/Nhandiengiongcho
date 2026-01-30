@@ -1,0 +1,14 @@
+Flask
+Werkzeug
+Pillow
+qrcode
+numpy
+opencv-python
+scikit-learn
+scikit-image
+joblib
+psycopg2-binary
+ultralytics
+PyYAML
+lxml
+tqdm

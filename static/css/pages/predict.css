@@ -5,13 +5,13 @@
 
 /* Page Header with Orange Gradient */
 .page-header {
-  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+  background: var(--gradient-primary);
   color: white;
   padding: var(--space-5) var(--space-5);
   border-radius: var(--radius-xl);
   margin-bottom: var(--space-6);
   text-align: center;
-  box-shadow: 0 8px 30px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 8px 30px rgba(var(--primary-rgb), 0.22);
   position: relative;
   overflow: hidden;
   animation: float 20s ease-in-out infinite;
@@ -74,7 +74,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #ff6b6b 0%, #feca57 100%);
+  background: var(--gradient-primary-90);
   transform: scaleX(0);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -111,7 +111,7 @@
   border-radius: var(--radius-xl);
   border: 4px solid white;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  outline: 2px solid #f0f0f0;
+  outline: 2px solid var(--border);
   display: block;
   transition: transform 0.3s ease;
 }
@@ -136,8 +136,8 @@
 .breed-result-highlight {
   background: linear-gradient(
     135deg,
-    rgba(255, 107, 107, 0.05) 0%,
-    rgba(254, 202, 87, 0.05) 100%
+    rgba(var(--primary-rgb), 0.05) 0%,
+    rgba(var(--secondary-rgb), 0.05) 100%
   );
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -156,7 +156,7 @@
   inset: 0;
   border-radius: var(--radius-xl);
   padding: 2px;
-  background: linear-gradient(135deg, #ff6b6b, #feca57);
+  background: var(--gradient-primary);
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -171,7 +171,7 @@
 .breed-icon {
   font-size: 3rem;
   line-height: 1;
-  filter: drop-shadow(0 4px 8px rgba(255, 107, 107, 0.3));
+  filter: drop-shadow(0 4px 8px rgba(var(--primary-rgb), 0.22));
   animation: bounce 2s ease-in-out infinite;
 }
 
@@ -191,7 +191,7 @@
 .breed-name {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -325,15 +325,15 @@
 }
 
 .detection-tag-dog {
-  background: rgba(255, 107, 107, 0.1);
-  border-color: #ff6b6b;
-  color: #ff6b6b;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--error);
+  color: var(--error);
 }
 
 .detection-tag-cat {
-  background: rgba(254, 202, 87, 0.1);
-  border-color: #feca57;
-  color: #f39c12;
+  background: rgba(var(--accent-rgb), 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* Action Card */
@@ -361,27 +361,27 @@
 }
 
 .btn-primary-action {
-  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+  background: var(--gradient-primary);
   color: white;
   border: none;
 }
 
 .btn-primary-action:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+  box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.28);
 }
 
 .btn-secondary-action {
   background: white;
-  color: #ff6b6b;
-  border: 2px solid #ff6b6b;
+  color: var(--primary);
+  border: 2px solid var(--primary);
 }
 
 .btn-secondary-action:hover {
-  background: #ff6b6b;
+  background: var(--primary);
   color: white;
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.22);
 }
 
 /* Info Tip Card */
@@ -391,17 +391,17 @@
   align-items: center;
   background: linear-gradient(
     135deg,
-    rgba(254, 202, 87, 0.05) 0%,
-    rgba(255, 107, 107, 0.05) 100%
+    rgba(var(--accent-rgb), 0.06) 0%,
+    rgba(var(--primary-rgb), 0.05) 100%
   );
-  border-left: 3px solid #feca57;
+  border-left: 3px solid var(--accent);
   animation: slideIn 0.7s ease 0.2s backwards;
 }
 
 .info-tip-icon {
   font-size: 2rem;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(254, 202, 87, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(var(--accent-rgb), 0.28));
 }
 
 .info-tip-content {
@@ -412,7 +412,7 @@
 }
 
 .info-tip-content strong {
-  color: #f39c12;
+  color: var(--accent);
   font-weight: 700;
 }
 

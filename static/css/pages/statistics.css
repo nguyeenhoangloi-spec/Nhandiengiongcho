@@ -10,12 +10,12 @@
 
 /* Page Header Pro */
 .page-header-pro {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: var(--gradient-primary);
   color: white;
   padding: var(--space-6);
   border-radius: var(--radius-xl);
   margin-bottom: var(--space-6);
-  box-shadow: 0 20px 40px rgba(250, 112, 154, 0.3);
+  box-shadow: 0 20px 40px rgba(var(--primary-rgb), 0.22);
   position: relative;
   overflow: hidden;
 }
@@ -102,7 +102,7 @@
 }
 
 .stat-card-pro.stat-primary {
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--primary);
 }
 .stat-card-pro.stat-success {
   border-left: 4px solid #10b981;
@@ -143,7 +143,7 @@
 .stat-value {
   font-size: 2.25rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

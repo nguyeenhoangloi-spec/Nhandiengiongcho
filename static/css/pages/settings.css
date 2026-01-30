@@ -99,7 +99,7 @@
 .select-pro:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.16);
 }
 
 .input-pro:disabled {
@@ -227,7 +227,7 @@
 /* Info Box */
 .info-box {
   padding: var(--space-4);
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(var(--primary-rgb), 0.1);
   border-left: 4px solid var(--primary);
   border-radius: var(--radius-md);
   display: flex;
