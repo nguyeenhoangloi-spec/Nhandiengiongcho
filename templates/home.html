@@ -1,0 +1,129 @@
+{% extends 'base.html' %} {% block title %}Trang chủ - Nhận Diện Giống Chó AI{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/home.css') }}"
+/>
+{% endblock %} {% block content %}
+
+<!-- Hero Section -->
+<div class="hero">
+  <div class="hero-content">
+    <h1>🐕 Nhận Diện Giống Chó Bằng AI</h1>
+    <p class="hero-subtitle">
+      Công nghệ YOLOv8 tiên tiến - Phân tích chính xác 120 giống chó từ Stanford
+      Dogs Dataset
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-number">120+</div>
+        <div class="stat-label">Giống chó</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">95%+</div>
+        <div class="stat-label">Độ chính xác</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">< 1s</div>
+        <div class="stat-label">Thời gian xử lý</div>
+      </div>
+    </div>
+    <a href="{{ url_for('predict.upload_page') }}" class="btn-hero">
+      📸 Thử ngay miễn phí
+    </a>
+  </div>
+</div>
+
+<!-- Features Grid -->
+<div class="features-grid">
+  <div class="feature-card">
+    <div class="feature-icon">🎯</div>
+    <h3>Nhận Diện Chính Xác</h3>
+    <p>
+      Mô hình YOLOv8 được huấn luyện trên 20,000+ ảnh chó, phân biệt 120 giống
+      khác nhau với độ chính xác cao.
+    </p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">⚡</div>
+    <h3>Xử Lý Nhanh Chóng</h3>
+    <p>
+      Kết quả trả về ngay lập tức, phân tích ảnh và trả về tên giống cùng độ tin
+      cậy chỉ trong vài giây.
+    </p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">📊</div>
+    <h3>Thông Tin Chi Tiết</h3>
+    <p>
+      Hiển thị tên giống, độ tin cậy, bounding box, và phân tích các đặc điểm
+      nhận diện từ mô hình.
+    </p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔒</div>
+    <h3>Bảo Mật & Riêng Tư</h3>
+    <p>
+      Dữ liệu người dùng được mã hóa, yêu cầu đăng nhập để sử dụng, lịch sử được
+      lưu trữ an toàn.
+    </p>
+  </div>
+</div>
+
+<!-- How It Works -->
+<div class="how-it-works">
+  <h2>🚀 Cách Thức Hoạt Động</h2>
+  <div class="steps-container">
+    <div class="step">
+      <div class="step-number">1</div>
+      <h3>Upload Ảnh</h3>
+      <p>Tải lên ảnh chó của bạn (JPG, PNG)</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <h3>Phân Tích AI</h3>
+      <p>YOLOv8 xử lý và nhận diện giống</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <h3>Kết Quả</h3>
+      <p>Nhận tên giống và độ tin cậy</p>
+    </div>
+  </div>
+</div>
+
+<!-- Supported Breeds Preview -->
+<div class="breeds-preview">
+  <h2>🐾 Một Số Giống Được Hỗ Trợ</h2>
+  <div class="breeds-tags">
+    <span class="breed-tag">Chihuahua</span>
+    <span class="breed-tag">Golden Retriever</span>
+    <span class="breed-tag">Beagle</span>
+    <span class="breed-tag">German Shepherd</span>
+    <span class="breed-tag">Labrador Retriever</span>
+    <span class="breed-tag">Poodle</span>
+    <span class="breed-tag">Siberian Husky</span>
+    <span class="breed-tag">Shih-Tzu</span>
+    <span class="breed-tag">Bulldog</span>
+    <span class="breed-tag">Pomeranian</span>
+    <span class="breed-tag">...và 110 giống khác</span>
+  </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section">
+  <h2>Sẵn sàng nhận diện giống chó của bạn?</h2>
+  <p>Đăng nhập ngay để trải nghiệm công nghệ AI nhận diện giống chó hàng đầu</p>
+  <div class="cta-buttons">
+    <a href="{{ url_for('predict.upload_page') }}" class="btn-primary-large"
+      >Bắt đầu ngay</a
+    >
+    <a href="{{ url_for('dashboard.dashboard') }}" class="btn-secondary-large"
+      >Xem Dashboard</a
+    >
+  </div>
+</div>
+
+{% endblock %}

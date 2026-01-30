@@ -1,0 +1,98 @@
+{% extends 'base_dashboard.html' %} {% block title %}Mua Gói{% endblock %} {%
+block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/monetization.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="page-header monetization-header">
+  <h1>🔒 Bạn đã hết lượt sử dụng</h1>
+  <p>
+    Bạn đã dùng hết 10 lượt miễn phí và 3 lượt xem quảng cáo. Vui lòng mua gói
+    để tiếp tục.
+  </p>
+</div>
+
+<div class="monetization-card">
+  <h2 class="upgrade-title">Chọn gói phù hợp</h2>
+
+  <div class="plan-grid">
+    <div class="plan-card">
+      <div class="plan-name">Basic</div>
+      <div class="plan-price">49.000đ<span>/tháng</span></div>
+      <ul class="plan-perks">
+        <li>✅ 200 lượt nhận diện/tháng</li>
+        <li>✅ Không cần xem quảng cáo</li>
+        <li>✅ Lưu lịch sử 30 ngày</li>
+      </ul>
+    </div>
+
+    <div class="plan-card featured">
+      <div class="plan-badge">Khuyên dùng</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">99.000đ<span>/tháng</span></div>
+      <ul class="plan-perks">
+        <li>✅ Không giới hạn nhận diện</li>
+        <li>✅ Ưu tiên tốc độ xử lý</li>
+        <li>✅ Lưu lịch sử không giới hạn</li>
+        <li>✅ Tải báo cáo thống kê</li>
+      </ul>
+    </div>
+
+    <div class="plan-card">
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price">Liên hệ<span>/tuỳ nhu cầu</span></div>
+      <ul class="plan-perks">
+        <li>✅ API key cho hệ thống</li>
+        <li>✅ SLA/Support</li>
+        <li>✅ Tuỳ chỉnh mô hình</li>
+      </ul>
+    </div>
+  </div>
+
+  <form
+    method="post"
+    action="{{ url_for('predict.checkout') }}"
+    class="checkout-form"
+  >
+    <div class="checkout-row">
+      <label class="checkout-label" for="plan">Gói</label>
+      <select id="plan" name="plan" class="checkout-select" required>
+        <option value="basic">Basic (200 lượt/tháng)</option>
+        <option value="pro" selected>Pro (không giới hạn)</option>
+        <option value="enterprise">Enterprise (liên hệ)</option>
+      </select>
+    </div>
+
+    <div class="checkout-row">
+      <label class="checkout-label" for="payment_method"
+        >Phương thức thanh toán</label
+      >
+      <select
+        id="payment_method"
+        name="payment_method"
+        class="checkout-select"
+        required
+      >
+        <option value="qr" selected>QR (VietQR / quét nhanh)</option>
+        <option value="momo">MoMo</option>
+        <option value="vnpay">VNPay</option>
+        <option value="bank">Chuyển khoản ngân hàng</option>
+        <option value="card">Thẻ (Visa/Master)</option>
+      </select>
+    </div>
+
+    <div class="ad-actions">
+      <a class="btn-outline" href="{{ url_for('predict.upload_page') }}"
+        >Quay lại</a
+      >
+      <button class="btn-primary" type="submit">💳 Thanh toán (demo)</button>
+    </div>
+  </form>
+
+  <div class="ad-note">
+    Trang này đang là demo UI + luồng. Khi bạn muốn làm “thật”, mình sẽ tích hợp
+    cổng thanh toán (MoMo/VNPay) và tạo hoá đơn.
+  </div>
+</div>
+{% endblock %}

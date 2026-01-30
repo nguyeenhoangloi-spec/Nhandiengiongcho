@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng Nhập - Dog Breed Recognition</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/pages/auth.css') }}"
+    />
+  </head>
+  <body class="auth-body">
+    <div class="auth-container">
+      <!-- Left Side - Brand & Visual -->
+      <div class="auth-left">
+        <div class="auth-brand">
+          <div class="brand-icon">🐕</div>
+          <h1 class="brand-title">Dog Breed Recognition</h1>
+          <p class="brand-subtitle">Nhận diện giống chó thông minh với AI</p>
+        </div>
+        <div class="auth-features">
+          <div class="feature-item">
+            <div class="feature-icon">✨</div>
+            <div class="feature-text">
+              <h3>Nhận diện chính xác</h3>
+              <p>120 giống chó với độ chính xác cao</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-text">
+              <h3>Xử lý nhanh chóng</h3>
+              <p>Kết quả trong vài giây</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div class="feature-text">
+              <h3>Lịch sử & Thống kê</h3>
+              <p>Theo dõi và phân tích dữ liệu</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Login Form -->
+      <div class="auth-right">
+        <div class="auth-form-container">
+          <div class="auth-header">
+            <h2>Chào mừng trở lại!</h2>
+            <p>Đăng nhập để tiếp tục sử dụng hệ thống</p>
+          </div>
+
+          <!-- Flash Messages -->
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span class="alert-icon"
+              >{% if category == 'success' %}✓{% elif category == 'error' %}✕{%
+              else %}ℹ{% endif %}</span
+            >
+            <span class="alert-message">{{ message }}</span>
+          </div>
+          {% endfor %} {% endif %} {% endwith %}
+
+          <form method="post" class="auth-form" id="loginForm">
+            <div class="form-group">
+              <label for="username" class="form-label">
+                <span class="label-icon">👤</span>
+                Tên đăng nhập hoặc Email
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-input"
+                placeholder="Nhập tên đăng nhập hoặc email"
+                required
+                autocomplete="username"
+              />
+              <span class="form-error" id="usernameError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="password" class="form-label">
+                <span class="label-icon">🔒</span>
+                Mật khẩu
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  class="form-input"
+                  placeholder="Nhập mật khẩu"
+                  required
+                  autocomplete="current-password"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  id="togglePassword"
+                >
+                  <span class="eye-icon" id="eyeIcon">👁️</span>
+                </button>
+              </div>
+              <span class="form-error" id="passwordError"></span>
+            </div>
+
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" name="remember" class="checkbox-input" />
+                <span class="checkbox-custom"></span>
+                <span class="checkbox-text">Ghi nhớ đăng nhập</span>
+              </label>
+              <a href="{{ url_for('account.forgot') }}" class="forgot-password"
+                >Quên mật khẩu?</a
+              >
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <span class="btn-text">Đăng nhập</span>
+              <span class="btn-icon">→</span>
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            <p class="footer-text">
+              Chưa có tài khoản?
+              <a href="{{ url_for('register.register') }}" class="footer-link"
+                >Đăng ký ngay</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Password toggle
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+      const eyeIcon = document.getElementById("eyeIcon");
+
+      togglePassword.addEventListener("click", function () {
+        const type = passwordInput.type === "password" ? "text" : "password";
+        passwordInput.type = type;
+        eyeIcon.textContent = type === "password" ? "👁️" : "🙈";
+      });
+
+      // Form validation
+      const loginForm = document.getElementById("loginForm");
+      const usernameInput = document.getElementById("username");
+      const usernameError = document.getElementById("usernameError");
+      const passwordError = document.getElementById("passwordError");
+
+      loginForm.addEventListener("submit", function (e) {
+        let isValid = true;
+
+        // Clear previous errors
+        usernameError.textContent = "";
+        passwordError.textContent = "";
+        usernameInput.classList.remove("input-error");
+        passwordInput.classList.remove("input-error");
+
+        // Validate username
+        if (usernameInput.value.trim().length < 3) {
+          usernameError.textContent = "Tên đăng nhập phải có ít nhất 3 ký tự";
+          usernameInput.classList.add("input-error");
+          isValid = false;
+        }
+
+        // Validate password
+        if (passwordInput.value.length < 6) {
+          passwordError.textContent = "Mật khẩu phải có ít nhất 6 ký tự";
+          passwordInput.classList.add("input-error");
+          isValid = false;
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+        }
+      });
+
+      // Input focus effects
+      document.querySelectorAll(".form-input").forEach((input) => {
+        input.addEventListener("focus", function () {
+          this.parentElement.classList.add("input-focused");
+        });
+        input.addEventListener("blur", function () {
+          this.parentElement.classList.remove("input-focused");
+        });
+      });
+    </script>
+  </body>
+</html>

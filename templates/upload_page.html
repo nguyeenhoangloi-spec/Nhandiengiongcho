@@ -1,0 +1,182 @@
+{% extends 'base_dashboard.html' %} {% block title %}Nhận Diện Giống Chó{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/upload.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="page-header">
+  <h1>📸 Nhận Diện Giống Chó</h1>
+  <p>
+    Tải lên ảnh chó của bạn để AI phân tích và nhận diện giống từ 120 giống
+    trong database
+  </p>
+</div>
+
+{% if quota_info %}
+<div class="quota-banner">
+  <div class="quota-row">
+    <div class="quota-title">Gói hiện tại: {{ quota_info.plan|upper }}</div>
+    {% if quota_info.plan == 'free' %}
+    <div class="quota-badges">
+      <span class="quota-badge"
+        >Free: {{ quota_info.total_predictions }}/{{ quota_info.free_limit
+        }}</span
+      >
+      <span class="quota-badge"
+        >Còn {{ quota_info.remaining_free }} lượt miễn phí</span
+      >
+      <span class="quota-badge"
+        >Unlock: {{ quota_info.ad_unlocks_remaining }}</span
+      >
+      <span class="quota-badge"
+        >Ads: {{ quota_info.ad_views_used }}/{{ quota_info.ad_views_limit
+        }}</span
+      >
+    </div>
+    {% else %}
+    <div class="quota-badges">
+      <span class="quota-badge">Không giới hạn lượt nhận diện</span>
+    </div>
+    {% endif %}
+  </div>
+  {% if quota_info.plan == 'free' and quota_info.remaining_free <= 0 %}
+  <div class="quota-hint">
+    Hết lượt miễn phí: hãy
+    <a href="{{ url_for('predict.watch_ad') }}">xem quảng cáo</a> để mở khóa
+    thêm.
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="upload-container">
+  <form
+    action="{{ url_for('predict.upload') }}"
+    method="post"
+    enctype="multipart/form-data"
+    class="card upload-form"
+    id="uploadForm"
+  >
+    <div class="drag-drop-zone" id="dropZone">
+      <div class="upload-content" id="uploadContent">
+        <div class="upload-icon">📷</div>
+        <h3>Kéo thả ảnh vào đây</h3>
+        <p class="upload-subtitle">hoặc</p>
+        <label class="file-input-label">
+          <input
+            type="file"
+            name="image"
+            accept="image/png, image/jpeg, image/jpg"
+            required
+            id="imageInput"
+          />
+          <span>📂 Chọn file từ máy</span>
+        </label>
+        <p class="upload-hint">Hỗ trợ: JPG, PNG, JPEG (tối đa 10MB)</p>
+      </div>
+      <div
+        class="preview-container"
+        id="previewContainer"
+        style="display: none"
+      >
+        <img id="imagePreview" class="image-preview" alt="Preview" />
+        <div class="preview-actions">
+          <button type="button" class="btn-change" id="changeBtn">
+            🔄 Đổi ảnh
+          </button>
+          <button type="submit" class="btn-analyze">🔍 Phân Tích Ngay</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Info Cards -->
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="info-icon">🎯</div>
+      <h4>120+ Giống Chó</h4>
+      <p>Hệ thống nhận diện từ Chihuahua đến Great Dane</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">⚡</div>
+      <h4>Xử Lý Nhanh</h4>
+      <p>Kết quả trong vòng 1-2 giây</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">📊</div>
+      <h4>Độ Tin Cậy Cao</h4>
+      <p>Hiển thị % chính xác cho mỗi dự đoán</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById("dropZone");
+  const uploadContent = document.getElementById("uploadContent");
+  const previewContainer = document.getElementById("previewContainer");
+  const imageInput = document.getElementById("imageInput");
+  const imagePreview = document.getElementById("imagePreview");
+  const changeBtn = document.getElementById("changeBtn");
+
+  // Drag and drop handlers
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  ["dragenter", "dragover"].forEach((eventName) => {
+    dropZone.addEventListener(
+      eventName,
+      () => dropZone.classList.add("drag-over"),
+      false,
+    );
+  });
+
+  ["dragleave", "drop"].forEach((eventName) => {
+    dropZone.addEventListener(
+      eventName,
+      () => dropZone.classList.remove("drag-over"),
+      false,
+    );
+  });
+
+  dropZone.addEventListener("drop", handleDrop, false);
+
+  function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+      imageInput.files = files;
+      displayPreview(files[0]);
+    }
+  }
+
+  imageInput.addEventListener("change", function (e) {
+    if (e.target.files.length > 0) {
+      displayPreview(e.target.files[0]);
+    }
+  });
+
+  function displayPreview(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      imagePreview.src = e.target.result;
+      uploadContent.style.display = "none";
+      previewContainer.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  }
+
+  changeBtn.addEventListener("click", function () {
+    uploadContent.style.display = "block";
+    previewContainer.style.display = "none";
+    imageInput.value = "";
+  });
+</script>
+
+{% endblock %}

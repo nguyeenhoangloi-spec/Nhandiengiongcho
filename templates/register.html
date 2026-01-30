@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng Ký - Dog Breed Recognition</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/pages/auth.css') }}"
+    />
+  </head>
+  <body class="auth-body">
+    <div class="auth-container">
+      <!-- Left Side - Brand & Visual -->
+      <div class="auth-left">
+        <div class="auth-brand">
+          <div class="brand-icon">🐕</div>
+          <h1 class="brand-title">Dog Breed Recognition</h1>
+          <p class="brand-subtitle">Nhận diện giống chó thông minh với AI</p>
+        </div>
+        <div class="auth-features">
+          <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-text">
+              <h3>Miễn phí sử dụng</h3>
+              <p>Không giới hạn số lần nhận diện</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-text">
+              <h3>Bảo mật tuyệt đối</h3>
+              <p>Dữ liệu được mã hóa và bảo vệ</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">💾</div>
+            <div class="feature-text">
+              <h3>Lưu trữ lịch sử</h3>
+              <p>Truy cập mọi lúc mọi nơi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Register Form -->
+      <div class="auth-right">
+        <div class="auth-form-container">
+          <div class="auth-header">
+            <h2>Tạo tài khoản mới</h2>
+            <p>Bắt đầu hành trình nhận diện giống chó của bạn</p>
+          </div>
+
+          <!-- Flash Messages -->
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span class="alert-icon"
+              >{% if category == 'success' %}✓{% elif category == 'error' %}✕{%
+              else %}ℹ{% endif %}</span
+            >
+            <span class="alert-message">{{ message }}</span>
+          </div>
+          {% endfor %} {% endif %} {% endwith %}
+
+          <form method="post" class="auth-form" id="registerForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fullname" class="form-label">
+                  <span class="label-icon">👤</span>
+                  Họ và tên
+                </label>
+                <input
+                  type="text"
+                  id="fullname"
+                  name="fullname"
+                  class="form-input"
+                  placeholder="Nguyễn Văn A"
+                  required
+                  autocomplete="name"
+                />
+                <span class="form-error" id="fullnameError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <span class="label-icon">📧</span>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="form-input"
+                  placeholder="example@email.com"
+                  required
+                  autocomplete="email"
+                />
+                <span class="form-error" id="emailError"></span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="username" class="form-label">
+                <span class="label-icon">🏷️</span>
+                Tên đăng nhập
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-input"
+                placeholder="Chọn tên đăng nhập duy nhất"
+                required
+                autocomplete="username"
+              />
+              <span class="form-hint"
+                >Ít nhất 3 ký tự, chỉ chứa chữ cái, số và dấu gạch dưới</span
+              >
+              <span class="form-error" id="usernameError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="password" class="form-label">
+                <span class="label-icon">🔒</span>
+                Mật khẩu
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  class="form-input"
+                  placeholder="Tạo mật khẩu mạnh"
+                  required
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  id="togglePassword"
+                >
+                  <span class="eye-icon" id="eyeIcon">👁️</span>
+                </button>
+              </div>
+              <div class="password-strength" id="passwordStrength">
+                <div class="strength-bar">
+                  <div class="strength-fill" id="strengthFill"></div>
+                </div>
+                <span class="strength-text" id="strengthText"
+                  >Độ mạnh mật khẩu</span
+                >
+              </div>
+              <span class="form-error" id="passwordError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword" class="form-label">
+                <span class="label-icon">🔐</span>
+                Xác nhận mật khẩu
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  class="form-input"
+                  placeholder="Nhập lại mật khẩu"
+                  required
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  id="toggleConfirmPassword"
+                >
+                  <span class="eye-icon" id="eyeIconConfirm">👁️</span>
+                </button>
+              </div>
+              <span class="form-error" id="confirmPasswordError"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  class="checkbox-input"
+                  required
+                />
+                <span class="checkbox-custom"></span>
+                <span class="checkbox-text">
+                  Tôi đồng ý với
+                  <a href="#" class="link-inline">Điều khoản dịch vụ</a> và
+                  <a href="#" class="link-inline">Chính sách bảo mật</a>
+                </span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <span class="btn-text">Tạo tài khoản</span>
+              <span class="btn-icon">→</span>
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            <p class="footer-text">
+              Đã có tài khoản?
+              <a href="{{ url_for('login.login') }}" class="footer-link"
+                >Đăng nhập ngay</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Password toggle for password
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+      const eyeIcon = document.getElementById("eyeIcon");
+
+      togglePassword.addEventListener("click", function () {
+        const type = passwordInput.type === "password" ? "text" : "password";
+        passwordInput.type = type;
+        eyeIcon.textContent = type === "password" ? "👁️" : "🙈";
+      });
+
+      // Password toggle for confirm password
+      const toggleConfirmPassword = document.getElementById(
+        "toggleConfirmPassword",
+      );
+      const confirmPasswordInput = document.getElementById("confirmPassword");
+      const eyeIconConfirm = document.getElementById("eyeIconConfirm");
+
+      toggleConfirmPassword.addEventListener("click", function () {
+        const type =
+          confirmPasswordInput.type === "password" ? "text" : "password";
+        confirmPasswordInput.type = type;
+        eyeIconConfirm.textContent = type === "password" ? "👁️" : "🙈";
+      });
+
+      // Password strength meter
+      const strengthFill = document.getElementById("strengthFill");
+      const strengthText = document.getElementById("strengthText");
+
+      passwordInput.addEventListener("input", function () {
+        const password = this.value;
+        let strength = 0;
+        let text = "";
+        let color = "";
+
+        if (password.length >= 6) strength++;
+        if (password.length >= 10) strength++;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+        if (/\d/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+        switch (strength) {
+          case 0:
+          case 1:
+            text = "Rất yếu";
+            color = "#dc3545";
+            break;
+          case 2:
+            text = "Yếu";
+            color = "#fd7e14";
+            break;
+          case 3:
+            text = "Trung bình";
+            color = "#ffc107";
+            break;
+          case 4:
+            text = "Mạnh";
+            color = "#28a745";
+            break;
+          case 5:
+            text = "Rất mạnh";
+            color = "#20c997";
+            break;
+        }
+
+        strengthFill.style.width = strength * 20 + "%";
+        strengthFill.style.backgroundColor = color;
+        strengthText.textContent = text;
+        strengthText.style.color = color;
+      });
+
+      // Form validation
+      const registerForm = document.getElementById("registerForm");
+      const fullnameInput = document.getElementById("fullname");
+      const emailInput = document.getElementById("email");
+      const usernameInput = document.getElementById("username");
+
+      const fullnameError = document.getElementById("fullnameError");
+      const emailError = document.getElementById("emailError");
+      const usernameError = document.getElementById("usernameError");
+      const passwordError = document.getElementById("passwordError");
+      const confirmPasswordError = document.getElementById(
+        "confirmPasswordError",
+      );
+
+      registerForm.addEventListener("submit", function (e) {
+        let isValid = true;
+
+        // Clear previous errors
+        [
+          fullnameError,
+          emailError,
+          usernameError,
+          passwordError,
+          confirmPasswordError,
+        ].forEach((el) => (el.textContent = ""));
+        [
+          fullnameInput,
+          emailInput,
+          usernameInput,
+          passwordInput,
+          confirmPasswordInput,
+        ].forEach((el) => el.classList.remove("input-error"));
+
+        // Validate fullname
+        if (fullnameInput.value.trim().length < 2) {
+          fullnameError.textContent = "Họ tên phải có ít nhất 2 ký tự";
+          fullnameInput.classList.add("input-error");
+          isValid = false;
+        }
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput.value)) {
+          emailError.textContent = "Email không hợp lệ";
+          emailInput.classList.add("input-error");
+          isValid = false;
+        }
+
+        // Validate username
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!usernameRegex.test(usernameInput.value)) {
+          usernameError.textContent =
+            "Tên đăng nhập phải có 3-20 ký tự, chỉ chứa chữ cái, số và dấu gạch dưới";
+          usernameInput.classList.add("input-error");
+          isValid = false;
+        }
+
+        // Validate password
+        if (passwordInput.value.length < 6) {
+          passwordError.textContent = "Mật khẩu phải có ít nhất 6 ký tự";
+          passwordInput.classList.add("input-error");
+          isValid = false;
+        }
+
+        // Validate confirm password
+        if (confirmPasswordInput.value !== passwordInput.value) {
+          confirmPasswordError.textContent = "Mật khẩu xác nhận không khớp";
+          confirmPasswordInput.classList.add("input-error");
+          isValid = false;
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+        }
+      });
+
+      // Input focus effects
+      document.querySelectorAll(".form-input").forEach((input) => {
+        input.addEventListener("focus", function () {
+          const wrapper =
+            this.closest(".password-input-wrapper") || this.parentElement;
+          wrapper.classList.add("input-focused");
+        });
+        input.addEventListener("blur", function () {
+          const wrapper =
+            this.closest(".password-input-wrapper") || this.parentElement;
+          wrapper.classList.remove("input-focused");
+        });
+      });
+    </script>
+  </body>
+</html>

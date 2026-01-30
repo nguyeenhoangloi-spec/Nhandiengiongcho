@@ -1,0 +1,167 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Cài Đặt{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/settings.css') }}" />
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header-pro">
+  <div class="header-content">
+    <h1><i class="icon">⚙️</i> Cài Đặt</h1>
+    <p>Tùy chỉnh trải nghiệm sử dụng của bạn</p>
+  </div>
+</div>
+
+<div class="settings-container">
+  <form method="POST" class="settings-form">
+    <!-- Profile Section -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h3><i class="icon">👤</i> Thông Tin Cá Nhân</h3>
+      </div>
+      <div class="section-content">
+        <div class="form-group-pro">
+          <label>Tên đăng nhập</label>
+          <input
+            type="text"
+            value="{{ session.get('username', '') }}"
+            disabled
+            class="input-pro"
+          />
+          <small class="input-hint">Không thể thay đổi tên đăng nhập</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance Section -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h3><i class="icon">🎨</i> Giao Diện</h3>
+      </div>
+      <div class="section-content">
+        <div class="form-group-pro">
+          <label for="theme">Theme</label>
+          <select name="theme" id="theme" class="select-pro">
+            <option value="light" {{ 'selected' if settings.theme == 'light' else '' }}>Sáng</option>
+            <option value="dark" {{ 'selected' if settings.theme == 'dark' else '' }}>Tối</option>
+            <option value="auto" {{ 'selected' if settings.theme == 'auto' else '' }}>Tự động</option>
+          </select>
+          <small class="input-hint">Chọn theme hiển thị cho giao diện</small>
+        </div>
+
+        <div class="form-group-pro">
+          <label for="language">Ngôn ngữ</label>
+          <select name="language" id="language" class="select-pro">
+            <option value="vi" {{ 'selected' if settings.language == 'vi' else '' }}>Tiếng Việt</option>
+            <option value="en" {{ 'selected' if settings.language == 'en' else '' }}>English</option>
+          </select>
+          <small class="input-hint">Ngôn ngữ hiển thị</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h3><i class="icon">🔔</i> Thông Báo</h3>
+      </div>
+      <div class="section-content">
+        <div class="toggle-group">
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <label>Thông báo trong ứng dụng</label>
+              <small>Hiển thị thông báo khi có hoạt động mới</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" name="notifications" {{ 'checked' if settings.notifications else '' }} />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <label>Thông báo qua Email</label>
+              <small>Nhận email về các cập nhật quan trọng</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" name="email_notifications" {{ 'checked' if settings.email_notifications else '' }} />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Section -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h3><i class="icon">🔒</i> Bảo Mật & Quyền Riêng Tư</h3>
+      </div>
+      <div class="section-content">
+        <div class="info-box info-warning">
+          <i class="icon">⚠️</i>
+          <div>
+            <strong>Lưu ý về dữ liệu</strong>
+            <p>
+              Ảnh và kết quả nhận diện của bạn được lưu trữ để cải thiện trải
+              nghiệm. Bạn có thể xóa lịch sử bất cứ lúc nào.
+            </p>
+          </div>
+        </div>
+
+        <div class="action-buttons-group">
+          <a href="{{ url_for('history.history') }}" class="btn-outline">
+            <i class="icon">📚</i> Xem Lịch Sử
+          </a>
+          <button
+            type="submit"
+            class="btn-danger"
+            formaction="{{ url_for('settings.clear_history') }}"
+            formmethod="POST"
+            onclick="return confirmClearHistory(event)"
+          >
+            <i class="icon">🗑️</i> Xóa Lịch Sử
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="settings-actions">
+      <button type="submit" class="btn-gradient-large">
+        <i class="icon">💾</i> Lưu Thay Đổi
+      </button>
+      <a href="{{ url_for('dashboard.dashboard') }}" class="btn-outline-large">
+        <i class="icon">❌</i> Hủy
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Theme change handler - sync with localStorage
+  document.getElementById('theme').addEventListener('change', function() {
+    const theme = this.value;
+    // Save to localStorage for early loading
+    try {
+      localStorage.setItem('theme', theme);
+    } catch(e) {}
+    // Apply immediately to html element
+    document.documentElement.setAttribute('data-theme', theme);
+  });
+
+  function confirmClearHistory(e) {
+    const ok = confirm(
+      "Bạn có chắc chắn muốn xóa toàn bộ lịch sử nhận diện? Hành động này không thể hoàn tác!",
+    );
+    if (!ok) {
+      if (e) e.preventDefault();
+      return false;
+    }
+    return true;
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends 'base_dashboard.html' %} {% block title %}Dashboard - Hệ Thống Nhận
+Diện Giống Chó{% endblock %} {% block content %}
+
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+  <div class="welcome-content">
+    <h1>🐾 Chào mừng trở lại, {{ session.get('username', 'User') }}!</h1>
+    <p>Hệ thống nhận diện giống chó với công nghệ AI YOLOv8</p>
+  </div>
+  <div class="welcome-action">
+    <a
+      href="{{ url_for('predict.upload_page') }}"
+      class="btn-primary btn-large"
+    >
+      📸 Nhận Diện Ngay
+    </a>
+  </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="stats-grid">
+  <div class="stat-card stat-card-blue">
+    <div class="stat-icon">🎯</div>
+    <div class="stat-content">
+      <div class="stat-number">120+</div>
+      <div class="stat-label">Giống được hỗ trợ</div>
+    </div>
+  </div>
+  <div class="stat-card stat-card-green">
+    <div class="stat-icon">✅</div>
+    <div class="stat-content">
+      <div class="stat-number">95%+</div>
+      <div class="stat-label">Độ chính xác</div>
+    </div>
+  </div>
+  <div class="stat-card stat-card-purple">
+    <div class="stat-icon">⚡</div>
+    <div class="stat-content">
+      <div class="stat-number">< 1s</div>
+      <div class="stat-label">Thời gian xử lý</div>
+    </div>
+  </div>
+  <div class="stat-card stat-card-orange">
+    <div class="stat-icon">🖼️</div>
+    <div class="stat-content">
+      <div class="stat-number">20K+</div>
+      <div class="stat-label">Ảnh huấn luyện</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="dashboard-section">
+  <h2>⚡ Thao Tác Nhanh</h2>
+  <div class="dashboard-grid">
+    <div
+      class="card card-hover"
+      role="link"
+      tabindex="0"
+      data-href="{{ url_for('predict.upload_page') }}"
+      onclick="window.location.href = this.dataset.href"
+      onkeydown="
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = this.dataset.href;
+        }
+      "
+    >
+      <div class="card-icon">📷</div>
+      <h3>Nhận Diện Giống</h3>
+      <p>Upload ảnh chó để AI phân tích và nhận diện giống</p>
+      <div class="card-badge-action">Bắt đầu →</div>
+    </div>
+
+    <div
+      class="card card-hover"
+      role="link"
+      tabindex="0"
+      data-href="{{ url_for('history.history') }}"
+      onclick="window.location.href = this.dataset.href"
+      onkeydown="
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = this.dataset.href;
+        }
+      "
+    >
+      <div class="card-icon">📊</div>
+      <h3>Lịch Sử Dự Đoán</h3>
+      <p>Xem lại các lần nhận diện trước đây</p>
+      <div class="card-badge-action">Truy cập →</div>
+    </div>
+
+    <div
+      class="card card-hover"
+      role="link"
+      tabindex="0"
+      data-href="{{ url_for('statistics.statistics') }}"
+      onclick="window.location.href = this.dataset.href"
+      onkeydown="
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = this.dataset.href;
+        }
+      "
+    >
+      <div class="card-icon">📈</div>
+      <h3>Thống Kê</h3>
+      <p>Phân tích chi tiết và báo cáo</p>
+      <div class="card-badge-action">Truy cập →</div>
+    </div>
+
+    <div
+      class="card card-hover"
+      role="link"
+      tabindex="0"
+      data-href="{{ url_for('settings.settings') }}"
+      onclick="window.location.href = this.dataset.href"
+      onkeydown="
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = this.dataset.href;
+        }
+      "
+    >
+      <div class="card-icon">⚙️</div>
+      <h3>Cài Đặt</h3>
+      <p>Tùy chỉnh hệ thống và tài khoản</p>
+      <div class="card-badge-action">Truy cập →</div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity (Sample) -->
+<div class="dashboard-section">
+  <h2>📋 Hoạt Động Gần Đây</h2>
+  <div class="activity-card">
+    {% if recent_predictions and recent_predictions|length > 0 %}
+    <div class="activity-list">
+      {% for pred in recent_predictions %}
+      <a class="activity-item" href="{{ url_for('history.history') }}">
+        <div class="activity-thumb">
+          <img src="/{{ pred.image_path }}" alt="" />
+        </div>
+        <div class="activity-meta">
+          <div class="activity-title">
+            <span class="activity-breed"
+              >{{ pred.breed or 'Chưa xác định' }}</span
+            >
+            {% if pred.confidence %}
+            <span class="activity-conf"
+              >{{ '%.1f'|format(pred.confidence * 100) }}%</span
+            >
+            {% endif %}
+          </div>
+          <div class="activity-sub">
+            <span>📅 {{ pred.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+            <span>🏷️ {{ pred.species or 'Dog' }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+
+      <div class="activity-actions">
+        <a href="{{ url_for('history.history') }}" class="btn-outline"
+          >Xem tất cả lịch sử →</a
+        >
+        <a href="{{ url_for('predict.upload_page') }}" class="btn-primary"
+          >Nhận diện thêm</a
+        >
+      </div>
+    </div>
+    {% else %}
+    <div class="activity-empty">
+      <div class="empty-icon">📭</div>
+      <h3>Chưa có hoạt động</h3>
+      <p>Bắt đầu nhận diện giống chó để xem lịch sử tại đây</p>
+      <a
+        href="{{ url_for('predict.upload_page') }}"
+        class="btn-primary"
+        style="display: inline-block; margin-top: 1rem"
+      >
+        Thử ngay
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Dog Breeds Info -->
+<div class="dashboard-section">
+  <h2>🐕 Một Số Giống Phổ Biến</h2>
+  <div class="breeds-showcase">
+    <div class="breed-item">
+      <div class="breed-emoji">🐕</div>
+      <div class="breed-name">Golden Retriever</div>
+    </div>
+    <div class="breed-item">
+      <div class="breed-emoji">🐶</div>
+      <div class="breed-name">Labrador</div>
+    </div>
+    <div class="breed-item">
+      <div class="breed-emoji">🐕‍🦺</div>
+      <div class="breed-name">German Shepherd</div>
+    </div>
+    <div class="breed-item">
+      <div class="breed-emoji">🦮</div>
+      <div class="breed-name">Beagle</div>
+    </div>
+    <div class="breed-item">
+      <div class="breed-emoji">🐩</div>
+      <div class="breed-name">Poodle</div>
+    </div>
+    <div class="breed-item">
+      <div class="breed-emoji">🐕</div>
+      <div class="breed-name">Husky</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

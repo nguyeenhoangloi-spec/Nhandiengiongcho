@@ -1,0 +1,105 @@
+{% extends 'base_dashboard.html' %} {% block title %}Thanh Toán{% endblock %} {%
+block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/monetization.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="page-header monetization-header">
+  <h1>💳 Thanh toán</h1>
+  <p>Hoàn tất thanh toán để kích hoạt gói và tiếp tục sử dụng.</p>
+</div>
+
+<div class="monetization-card">
+  <div class="checkout-summary">
+    <div class="summary-item">
+      <span>Mã đơn</span><strong>#{{ order_id }}</strong>
+    </div>
+    <div class="summary-item">
+      <span>Gói</span><strong>{{ plan|upper }}</strong>
+    </div>
+    <div class="summary-item">
+      <span>Phương thức</span><strong>{{ payment_method|upper }}</strong>
+    </div>
+    <div class="summary-item">
+      <span>Số tiền</span
+      ><strong
+        >{% if amount_vnd and amount_vnd > 0 %}{{
+        "{:,}".format(amount_vnd).replace(",", ".") }}đ{% else %}Liên hệ{% endif
+        %}</strong
+      >
+    </div>
+  </div>
+
+  <div class="payment-grid">
+    <div class="payment-left">
+      <h2 class="pay-title">Thanh toán bằng QR</h2>
+      <p class="pay-sub">Quét QR để thanh toán nhanh (VietQR/EMVCo).</p>
+
+      {% if qr_available %}
+      <div class="qr-wrap">
+        <img
+          class="qr-img"
+          src="{{ url_for('predict.payment_qr_png') }}"
+          alt="QR Payment"
+        />
+      </div>
+      {% else %}
+      <div class="qr-missing">
+        Thiếu thư viện tạo QR. Cài thêm <code>qrcode</code> để hiển thị QR.
+      </div>
+      {% endif %}
+
+      <div class="bank-box">
+        <div class="bank-row">
+          <span>Ngân hàng</span
+          ><strong>{{ config.get('VIETQR_BANK_NAME', 'Vietcombank') }}</strong>
+        </div>
+        <div class="bank-row">
+          <span>Số TK</span
+          ><strong
+            >{{ config.get('VIETQR_ACCOUNT_NUMBER', 'Chưa cấu hình') }}</strong
+          >
+        </div>
+        <div class="bank-row">
+          <span>Chủ TK</span
+          ><strong
+            >{{ config.get('VIETQR_ACCOUNT_NAME', 'DOG AI APP') }}</strong
+          >
+        </div>
+        <div class="bank-row">
+          <span>Nội dung</span><strong>DOGAI {{ order_id }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="payment-right">
+      <h2 class="pay-title">Xác nhận</h2>
+      <p class="pay-sub">
+        Sau khi thanh toán, bấm xác nhận để kích hoạt gói (demo).
+      </p>
+
+      <form
+        method="post"
+        action="{{ url_for('predict.upgrade_buy') }}"
+        class="confirm-form"
+      >
+        <input type="hidden" name="order_id" value="{{ order_id }}" />
+        <div class="ad-actions">
+          <a class="btn-outline" href="{{ url_for('predict.upgrade') }}"
+            >← Đổi gói</a
+          >
+          <button class="btn-primary" type="submit">
+            ✅ Tôi đã thanh toán
+          </button>
+        </div>
+      </form>
+
+      <div class="ad-note">
+        Lưu ý: QR là VietQR/EMVCo. Luồng xác nhận vẫn là demo (chưa có callback
+        tự động).
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

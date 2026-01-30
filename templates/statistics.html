@@ -1,0 +1,140 @@
+{% extends 'base_dashboard.html' %} {% block title %}Thống Kê{% endblock %} {%
+block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/statistics.css') }}"
+/>
+{% endblock %} {% block content %}
+
+<div class="page-header-pro">
+  <div class="header-content">
+    <h1><i class="icon">📊</i> Thống Kê & Phân Tích</h1>
+    <p>Xem chi tiết các số liệu nhận diện giống chó của bạn</p>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-cards-pro">
+  <div class="stat-card-pro stat-primary">
+    <div class="stat-header">
+      <i class="stat-icon-large">🎯</i>
+      <span class="stat-trend up">+{{ stats.total_predictions }}</span>
+    </div>
+    <div class="stat-value">{{ stats.total_predictions }}</div>
+    <div class="stat-label">Tổng Lần Nhận Diện</div>
+  </div>
+
+  <div class="stat-card-pro stat-success">
+    <div class="stat-header">
+      <i class="stat-icon-large">✨</i>
+      <span class="stat-trend"
+        >{{ '%.1f'|format(stats.avg_confidence * 100) }}%</span
+      >
+    </div>
+    <div class="stat-value">
+      {{ '%.0f'|format(stats.avg_confidence * 100) }}%
+    </div>
+    <div class="stat-label">Độ Tin Cậy Trung Bình</div>
+  </div>
+
+  <div class="stat-card-pro stat-info">
+    <div class="stat-header">
+      <i class="stat-icon-large">🏆</i>
+      <span class="stat-trend">Top</span>
+    </div>
+    <div class="stat-value">{{ stats.top_breeds|length }}</div>
+    <div class="stat-label">Giống Phổ Biến</div>
+  </div>
+
+  <div class="stat-card-pro stat-warning">
+    <div class="stat-header">
+      <i class="stat-icon-large">📅</i>
+    </div>
+    <div class="stat-value">{{ recent_predictions|length }}</div>
+    <div class="stat-label">Gần Đây</div>
+  </div>
+</div>
+
+<!-- Charts Section -->
+<div class="charts-section">
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3><i class="icon">📈</i> Top 5 Giống Phổ Biến</h3>
+    </div>
+    <div class="chart-body">
+      {% if stats.top_breeds %}
+      <div class="breed-chart">
+        {% for breed in stats.top_breeds %}
+        <div class="chart-item">
+          <div class="chart-label">
+            <span class="breed-rank">#{{ loop.index }}</span>
+            <span class="breed-name-chart">{{ breed.breed }}</span>
+          </div>
+          <div class="chart-bar-container">
+            <div
+              class="chart-bar"
+              style="--w: {{ (breed.count / stats.top_breeds[0].count * 100)|int }}%;"
+            >
+              <span class="chart-value">{{ breed.count }} lần</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="no-data">
+        <i class="icon-large">📊</i>
+        <p>Chưa có dữ liệu thống kê</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3><i class="icon">🕒</i> Hoạt Động Gần Đây</h3>
+      <a href="{{ url_for('history.history') }}" class="view-all-link"
+        >Xem tất cả →</a
+      >
+    </div>
+    <div class="chart-body">
+      {% if recent_predictions %}
+      <div class="activity-timeline">
+        {% for pred in recent_predictions[:5] %}
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-image">
+              <img src="/{{ pred.image_path }}" alt="Dog" />
+            </div>
+            <div class="timeline-details">
+              <div class="timeline-breed">
+                {{ pred.breed or 'Chưa xác định' }}
+              </div>
+              <div class="timeline-meta">
+                {% if pred.confidence %}
+                <span class="confidence-badge-mini"
+                  >{{ '%.0f'|format(pred.confidence * 100) }}%</span
+                >
+                {% endif %}
+                <span class="timeline-time"
+                  >{{ pred.created_at.strftime('%d/%m %H:%M') }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="no-data">
+        <i class="icon-large">⏱️</i>
+        <p>Chưa có hoạt động gần đây</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

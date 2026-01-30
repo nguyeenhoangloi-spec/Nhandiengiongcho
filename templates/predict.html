@@ -1,0 +1,147 @@
+{% extends 'base_dashboard.html' %} {% block title %}Kết Quả Nhận Diện{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/predict.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="page-header">
+  <h1>✨ Kết Quả Nhận Diện Giống Chó</h1>
+  <p>Phân tích hoàn tất - dưới đây là kết quả chi tiết từ AI</p>
+</div>
+
+<div class="result-container">
+  <!-- Left Column: Image -->
+  <div class="result-image-col">
+    <div class="card">
+      <h3>🖼️ Ảnh Đã Phân Tích</h3>
+      <img src="/{{ image_path }}" alt="Uploaded Image" class="result-image" />
+    </div>
+  </div>
+
+  <!-- Right Column: Results -->
+  <div class="result-info-col">
+    <!-- Main Result Card -->
+    <div class="card result-main-card">
+      <h3>🐾 Kết Quả Nhận Diện</h3>
+
+      {% if result.note %}
+      <div class="result-divider"></div>
+      <div
+        class="result-item"
+        style="display: block; border-bottom: none; padding-top: 0.5rem"
+      >
+        <span class="result-label">ℹ️ Thông báo:</span>
+        <div
+          class="result-value"
+          style="margin-top: 0.25rem; color: var(--text-secondary)"
+        >
+          {{ result.note }}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Breed Result - Highlight -->
+      <div class="breed-result-highlight">
+        <div class="breed-icon">🐕</div>
+        <div class="breed-info">
+          <div class="breed-label">Giống Chó:</div>
+          <div class="breed-name">
+            {{ result.breed if result.breed else 'Chưa xác định' }}
+          </div>
+          {% if result.breed_conf is defined and result.breed_conf is not none
+          %}
+          <div class="breed-confidence">
+            <div class="confidence-bar-container">
+              <div
+                class="confidence-bar"
+                data-width="{{ (result.breed_conf * 100)|int }}"
+              ></div>
+            </div>
+            <span class="confidence-text"
+              >Độ tin cậy: {{ '%.1f'|format(result.breed_conf * 100) }}%</span
+            >
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Species Detection -->
+      <div class="result-divider"></div>
+      <div class="result-item">
+        <span class="result-label">🔍 Loài:</span>
+        <span class="result-value">
+          {% if yolo_species %} {{ yolo_species }} {% if yolo_species_conf is
+          not none %}
+          <span class="confidence-badge-small">
+            {{ '%.0f'|format(yolo_species_conf * 100) }}%
+          </span>
+          {% endif %} {% else %}
+          <span style="color: #999">Không xác định</span>
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- Detections -->
+      {% if yolo_detections %}
+      <div
+        class="result-item"
+        style="display: block; border-bottom: none; padding-top: 0.5rem"
+      >
+        <span class="result-label">🎯 Các đối tượng phát hiện:</span>
+        <div class="detection-tags">
+          {% for det in yolo_detections %} {% if det.label in ['dog','cat'] %}
+          <span class="detection-tag detection-tag-{{ det.label }}">
+            {{ det.label|title }} {% if det.conf is not none %}
+            <strong>{{ '%.0f'|format(det.conf*100) }}%</strong>
+            {% endif %}
+          </span>
+          {% endif %} {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card action-card">
+      <a
+        href="{{ url_for('predict.upload_page') }}"
+        class="btn-action btn-primary-action"
+      >
+        🔄 Phân Tích Ảnh Khác
+      </a>
+      <a
+        href="{{ url_for('dashboard.dashboard') }}"
+        class="btn-action btn-secondary-action"
+      >
+        🏠 Về Dashboard
+      </a>
+    </div>
+
+    <!-- Info Card -->
+    <div class="card info-tip-card">
+      <div class="info-tip-icon">💡</div>
+      <div class="info-tip-content">
+        <strong>Mẹo:</strong> Độ chính xác cao hơn khi ảnh chứa toàn thân chó,
+        ánh sáng tốt và nền rõ ràng.
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script>
+  // Apply confidence bar widths without embedding Jinja inside CSS values.
+  document.addEventListener("DOMContentLoaded", function () {
+    document
+      .querySelectorAll(".confidence-bar[data-width]")
+      .forEach(function (el) {
+        var w = Number(el.getAttribute("data-width") || "0");
+        if (!Number.isFinite(w)) w = 0;
+        if (w < 0) w = 0;
+        if (w > 100) w = 100;
+        el.style.width = w + "%";
+      });
+  });
+</script>
+{% endblock %}

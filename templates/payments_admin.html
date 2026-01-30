@@ -1,0 +1,68 @@
+{% extends "base_dashboard.html" %} {% block title %}Quản lý thanh toán{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/users.css') }}"
+/>
+{% endblock %} {% block content %}
+<section class="users-container">
+  <div class="users-header">
+    <h1><i class="fa-solid fa-receipt"></i> Thanh toán</h1>
+    <div style="color: var(--text-secondary)">Danh sách đơn (demo) gần đây</div>
+  </div>
+
+  <div class="users-table-wrapper">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>User</th>
+          <th>Gói</th>
+          <th>Phương thức</th>
+          <th>Số tiền</th>
+          <th>Trạng thái</th>
+          <th>Tạo lúc</th>
+          <th>Xác nhận</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td><strong>{{ o.order_id }}</strong></td>
+          <td>
+            <div class="user-info">
+              <div class="user-avatar">
+                {{ (o.username or 'U')[:1] | upper }}
+              </div>
+              <div class="user-details">
+                <div class="user-name">{{ o.username }}</div>
+                <div class="user-email">{{ o.email or '-' }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ (o.plan or '').upper() }}</td>
+          <td>{{ (o.payment_method or '').upper() }}</td>
+          <td>{{ o.amount_vnd }} VND</td>
+          <td>
+            <span
+              class="status-badge {{ 'status-badge-active' if o.status == 'paid' else 'status-badge-inactive' }}"
+            >
+              {{ 'PAID' if o.status == 'paid' else (o.status or 'PENDING') |
+              upper }}
+            </span>
+          </td>
+          <td>{{ o.created_at }}</td>
+          <td>{{ o.confirmed_at or '-' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 1rem">
+            Chưa có đơn thanh toán nào.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

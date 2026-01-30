@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="vi" data-theme="{{ ui_theme }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+
+    <script>
+      // Apply theme sớm để tránh flash
+      (function () {
+        try {
+          var t = localStorage.getItem("theme");
+          if (t) document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {}
+      })();
+    </script>
+
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/pages/dashboard.css') }}"
+    />
+    {% block extra_css %}{% endblock %}
+    <!-- Font Awesome CDN for sidebar icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="dashboard-layout">
+    <nav class="top-navbar">
+      <div class="navbar-left">
+        <span class="navbar-logo">🐕</span>
+        <span class="navbar-title">YOLOv8 Dashboard</span>
+      </div>
+
+      <div class="navbar-center">
+        <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item"
+          ><i class="fa-solid fa-house"></i> Trang chủ</a
+        >
+        <a href="{{ url_for('predict.upload_page') }}" class="nav-item"
+          ><i class="fa-solid fa-paw"></i> Nhận diện</a
+        >
+        <a href="{{ url_for('history.history') }}" class="nav-item"
+          ><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử</a
+        >
+        <a href="{{ url_for('statistics.statistics') }}" class="nav-item"
+          ><i class="fa-solid fa-chart-bar"></i> Thống kê</a
+        >
+        {% if session.get('role') == 'admin' %}
+        <a href="{{ url_for('users.list_users') }}" class="nav-item"
+          ><i class="fa-solid fa-users"></i> Người dùng</a
+        >
+        <a href="{{ url_for('users.payments_list') }}" class="nav-item"
+          ><i class="fa-solid fa-receipt"></i> Thanh toán</a
+        >
+        {% endif %}
+        <a href="{{ url_for('settings.settings') }}" class="nav-item"
+          ><i class="fa-solid fa-gear"></i> Cài đặt</a
+        >
+        {% if session.get('user_id') and session.get('role') != 'admin' %}
+        <a href="{{ url_for('predict.upgrade') }}" class="nav-item"
+          ><i class="fa-solid fa-crown"></i> Gói</a
+        >
+        <a href="{{ url_for('predict.my_payments') }}" class="nav-item"
+          ><i class="fa-solid fa-receipt"></i> Thanh toán</a
+        >
+        {% endif %}
+      </div>
+
+      <div class="navbar-right">
+        {% if session.get('user_id') %}
+        <span class="user-info"
+          ><i class="fa-solid fa-user-circle"></i> {{ session.get('username')
+          }}</span
+        >
+        {% if current_plan %}
+        <span class="user-info" style="opacity: 0.9">
+          <i class="fa-solid fa-crown"></i> {{ current_plan|upper }}
+        </span>
+        {% endif %}
+        <a href="{{ url_for('logout.logout') }}" class="nav-item logout-btn"
+          ><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a
+        >
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+          <li class="flash {{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %} {% block content %}{% endblock %}
+      </main>
+
+      <footer class="footer">
+        <p>&copy; 2026 Nhận diện chó/mèo - Khu vực quản trị</p>
+      </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

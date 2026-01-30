@@ -1,0 +1,122 @@
+{% extends 'base_dashboard.html' %} {% block title %}Lịch Sử Nhận Diện{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/history.css') }}"
+/>
+{% endblock %} {% block content %}
+
+<div class="page-header-pro">
+  <div class="header-content">
+    <h1><i class="icon">📚</i> Lịch Sử Nhận Diện</h1>
+    <p>
+      Xem lại tất cả các lần nhận diện giống chó của bạn ({{ total_records }}
+      bản ghi)
+    </p>
+  </div>
+  <div class="header-actions">
+    <a href="{{ url_for('predict.upload_page') }}" class="btn-gradient">
+      <i class="icon">➕</i> Nhận Diện Mới
+    </a>
+  </div>
+</div>
+
+{% if predictions and predictions|length > 0 %}
+<div class="history-grid">
+  {% for pred in predictions %}
+  <div
+    class="history-card"
+    data-aos="fade-up"
+    data-aos-delay="{{ loop.index0 * 50 }}"
+  >
+    <div class="history-image-container">
+      <img src="/{{ pred.image_path }}" alt="Dog" class="history-image" />
+      <div class="history-overlay">
+        <a href="/{{ pred.image_path }}" target="_blank" class="view-full">
+          <i class="icon">🔍</i> Xem đầy đủ
+        </a>
+      </div>
+    </div>
+    <div class="history-content">
+      <div class="breed-badge">
+        <div class="breed-icon">🐕</div>
+        <div class="breed-details">
+          <div class="breed-name">{{ pred.breed or 'Chưa xác định' }}</div>
+          {% if pred.confidence %}
+          <div class="breed-confidence">
+            <div class="confidence-mini-bar">
+              <div
+                class="confidence-fill"
+                style="--progress: {{ ((pred.confidence or 0) * 100)|int }}%;"
+              ></div>
+            </div>
+            <span class="confidence-percent"
+              >{{ '%.1f'|format(pred.confidence * 100) }}%</span
+            >
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="history-meta">
+        <div class="meta-item">
+          <i class="icon-small">📅</i>
+          <span>{{ pred.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+        </div>
+        <div class="meta-item">
+          <i class="icon-small">🏷️</i>
+          <span>{{ pred.species or 'Dog' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+  {% if page > 1 %}
+  <a
+    href="{{ url_for('history.history', page=page-1) }}"
+    class="btn-pagination"
+  >
+    <i class="icon">◀</i> Trước
+  </a>
+  {% else %}
+  <button class="btn-pagination" disabled><i class="icon">◀</i> Trước</button>
+  {% endif %}
+
+  <div class="page-numbers">
+    {% for p in range(1, total_pages + 1) %} {% if p == page %}
+    <span class="page-number active">{{ p }}</span>
+    {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+    <a href="{{ url_for('history.history', page=p) }}" class="page-number"
+      >{{ p }}</a
+    >
+    {% elif p == page - 3 or p == page + 3 %}
+    <span class="page-ellipsis">...</span>
+    {% endif %} {% endfor %}
+  </div>
+
+  {% if page < total_pages %}
+  <a
+    href="{{ url_for('history.history', page=page+1) }}"
+    class="btn-pagination"
+  >
+    Sau <i class="icon">▶</i>
+  </a>
+  {% else %}
+  <button class="btn-pagination" disabled>Sau <i class="icon">▶</i></button>
+  {% endif %}
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📭</div>
+  <h3>Chưa Có Lịch Sử</h3>
+  <p>Bạn chưa thực hiện nhận diện giống chó nào. Hãy thử ngay!</p>
+  <a href="{{ url_for('predict.upload_page') }}" class="btn-gradient-large">
+    <i class="icon">📸</i> Bắt Đầu Nhận Diện
+  </a>
+</div>
+{% endif %} {% endblock %}

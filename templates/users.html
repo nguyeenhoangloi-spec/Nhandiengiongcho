@@ -1,0 +1,67 @@
+{% extends "base_dashboard.html" %} {% block title %}Quản trị người dùng{%
+endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/users.css') }}"
+/>
+{% endblock %} {% block content %}
+<section class="card">
+  <h1>Người dùng</h1>
+  <p>Chỉ hiển thị với tài khoản quản trị.</p>
+  <!-- Đã xóa nút khởi tạo bảng ứng dụng -->
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên đăng nhập</th>
+          <th>Họ tên</th>
+          <th>Email</th>
+          <th>Vai trò</th>
+          <th>Gói</th>
+          <th>Trạng thái</th>
+          <th>Ngày tạo</th>
+          <th>Cấp gói</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.fullname or '-' }}</td>
+          <td>{{ u.email or '-' }}</td>
+          <td>
+            <span
+              class="badge {{ 'badge-admin' if u.role == 'admin' else 'badge-user' }}"
+              >{{ u.role or 'user' }}</span
+            >
+          </td>
+          <td>
+            <span class="badge badge-user">{{ (u.plan or 'free')|upper }}</span>
+          </td>
+          <td>{{ 'Hoạt động' if u.is_active else 'Bị khóa' }}</td>
+          <td>{{ u.created_at }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('users.set_user_plan') }}" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+              <input type="hidden" name="user_id" value="{{ u.id }}" />
+              <select name="plan" class="select-pro" style="min-width: 120px">
+                <option value="free" {{ 'selected' if (u.plan or 'free') == 'free' else '' }}>FREE</option>
+                <option value="basic" {{ 'selected' if (u.plan or '') == 'basic' else '' }}>BASIC</option>
+                <option value="pro" {{ 'selected' if (u.plan or '') == 'pro' else '' }}>PRO</option>
+                <option value="enterprise" {{ 'selected' if (u.plan or '') == 'enterprise' else '' }}>ENTERPRISE</option>
+              </select>
+              <button type="submit" class="btn-primary" style="padding: 8px 12px">Cập nhật</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" style="text-align: center">Không có dữ liệu.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base_dashboard.html' %} {% block title %}Xem Quảng Cáo{% endblock %}
+{% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/monetization.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="page-header monetization-header">
+  <h1>📺 Xem quảng cáo để tiếp tục</h1>
+  <p>
+    Sau 10 lượt miễn phí, mỗi quảng cáo sẽ mở khóa thêm 3 lượt nhận diện (tối đa
+    3 lần).
+  </p>
+</div>
+
+<div class="monetization-card">
+  <div class="monetization-status">
+    {% if quota_info %}
+    <div class="status-row">
+      <span class="status-badge"
+        >Đã nhận diện: {{ quota_info.total_predictions }}/{{
+        quota_info.free_limit }}</span
+      >
+      <span class="status-badge"
+        >Unlock còn: {{ quota_info.ad_unlocks_remaining }}</span
+      >
+      <span class="status-badge"
+        >Ads: {{ quota_info.ad_views_used }}/{{ quota_info.ad_views_limit
+        }}</span
+      >
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="ad-player" id="adPlayer">
+    <div class="ad-placeholder">
+      <div class="ad-title">Video quảng cáo (demo)</div>
+      <div class="ad-sub">
+        Vui lòng chờ <span id="countdown">8</span>s để mở khóa
+      </div>
+      <div class="ad-bar"><span id="adBar"></span></div>
+    </div>
+  </div>
+
+  <form
+    method="post"
+    action="{{ url_for('predict.watch_ad_complete') }}"
+    class="ad-actions"
+  >
+    <a class="btn-outline" href="{{ url_for('predict.upload_page') }}"
+      >Quay lại</a
+    >
+    <button class="btn-primary" type="submit" id="completeBtn" disabled>
+      ✅ Tôi đã xem xong
+    </button>
+  </form>
+
+  <div class="ad-note">
+    Nếu bạn đã xem đủ 3 lần, hệ thống sẽ yêu cầu mua gói để sử dụng tiếp.
+  </div>
+</div>
+
+<script>
+  (function () {
+    const total = 8;
+    let remaining = total;
+    const countdownEl = document.getElementById("countdown");
+    const btn = document.getElementById("completeBtn");
+    const bar = document.getElementById("adBar");
+
+    function tick() {
+      remaining -= 1;
+      if (remaining <= 0) {
+        countdownEl.textContent = "0";
+        btn.disabled = false;
+        btn.classList.add("ready");
+        bar.style.width = "100%";
+        return;
+      }
+      countdownEl.textContent = String(remaining);
+      const progress = ((total - remaining) / total) * 100;
+      bar.style.width = progress.toFixed(0) + "%";
+      setTimeout(tick, 1000);
+    }
+
+    bar.style.width = "0%";
+    setTimeout(tick, 1000);
+  })();
+</script>
+{% endblock %}
