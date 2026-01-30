@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, jsonify, session
 import os
 
@@ -27,12 +26,12 @@ app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg"}
 
 # VietQR (EMVCo) config (có thể override bằng biến môi trường)
 # Lưu ý: VIETQR_BANK_BIN là BIN NAPAS 6 số của ngân hàng (bắt buộc để VietQR scan ra đúng).
-app.config["VIETQR_BANK_NAME"] = os.getenv("VIETQR_BANK_NAME", "MB Bank")
-app.config["VIETQR_BANK_BIN"] = os.getenv("VIETQR_BANK_BIN", "")
-app.config["VIETQR_ACCOUNT_NUMBER"] = os.getenv("VIETQR_ACCOUNT_NUMBER", "9244424440709")
-app.config["VIETQR_ACCOUNT_NAME"] = os.getenv("VIETQR_ACCOUNT_NAME", "NGUYEN HOANG LOI")
-app.config["VIETQR_MERCHANT_NAME"] = os.getenv("VIETQR_MERCHANT_NAME", "DOG AI APP")
-app.config["VIETQR_MERCHANT_CITY"] = os.getenv("VIETQR_MERCHANT_CITY", "HANOI")
+app.config["VIETQR_BANK_NAME"] = "MB Bank"
+app.config["VIETQR_BANK_BIN"] = "970422"
+app.config["VIETQR_ACCOUNT_NUMBER"] = "9244424440709"
+app.config["VIETQR_ACCOUNT_NAME"] = "NGUYEN HOANG LOI"
+app.config["VIETQR_MERCHANT_NAME"] = "DOG AI APP"
+app.config["VIETQR_MERCHANT_CITY"] = "HANOI"
 
 # Đăng ký các Blueprint với tiền tố URL
 app.register_blueprint(home_bp, url_prefix="")
