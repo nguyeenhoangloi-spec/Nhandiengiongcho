@@ -1,35 +1,61 @@
-{% extends "base_dashboard.html" %} {% block title %}Quản trị người dùng{%
-endblock %} {% block extra_css %}
-<link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/pages/users.css') }}"
-/>
-{% endblock %} {% block content %}
-<section class="card">
-  <h1>Quản lý người dùng</h1>
-  <p>Chỉ hiển thị với tài khoản quản trị.</p>
-  <div class="user-admin-toolbar" style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px; align-items:center">
-    <input type="text" class="form-control" placeholder="Tìm kiếm tên, email..." style="max-width:220px" />
-    <select class="form-control" style="max-width:140px">
-      <option value="">Tất cả vai trò</option>
-      <option value="admin">Admin</option>
-      <option value="user">User</option>
-    </select>
-    <select class="form-control" style="max-width:140px">
-      <option value="">Tất cả trạng thái</option>
-      <option value="active">Hoạt động</option>
-      <option value="locked">Bị khóa</option>
-    </select>
-    <button class="btn-primary" style="padding:8px 16px">Lọc</button>
+{% extends "base_dashboard.html" %}
+
+{% block title %}Quản trị người dùng{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/users.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="users-container">
+  <div class="users-header">
+    <div>
+      <h1><i class="fa-solid fa-users"></i> Quản lý người dùng</h1>
+      <div class="users-subtitle">Chỉ hiển thị với tài khoản quản trị.</div>
+    </div>
+
+    <div class="search-bar">
+      <input id="usersSearch" type="text" placeholder="Tìm theo username/email/họ tên..." autocomplete="off" />
+      <select id="roleFilter" aria-label="Lọc theo vai trò">
+        <option value="">Tất cả vai trò</option>
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+      </select>
+      <select id="statusFilter" aria-label="Lọc theo trạng thái">
+        <option value="">Tất cả trạng thái</option>
+        <option value="active">Hoạt động</option>
+        <option value="locked">Bị khóa</option>
+      </select>
+      <button type="button" class="users-filter-btn" id="clearFilters">Xóa lọc</button>
+    </div>
   </div>
-  <div class="table-wrap">
-    <table class="table">
+
+  <div class="users-stats" aria-label="Thống kê">
+    <div class="stat-box">
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-label">Tổng</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="statAdmins">0</div>
+      <div class="stat-label">Admin</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="statActive">0</div>
+      <div class="stat-label">Hoạt động</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="statLocked">0</div>
+      <div class="stat-label">Bị khóa</div>
+    </div>
+  </div>
+
+  {% if users %}
+  <div class="users-table-wrapper">
+    <table class="users-table" id="usersTable">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Tên đăng nhập</th>
+          <th>Người dùng</th>
           <th>Họ tên</th>
-          <th>Email</th>
           <th>Vai trò</th>
           <th>Gói</th>
           <th>Trạng thái</th>
@@ -40,122 +66,321 @@ endblock %} {% block extra_css %}
       </thead>
       <tbody>
         {% for u in users %}
-        <tr>
-          <td>{{ u.id }}</td>
-          <td>{{ u.username }}</td>
-          <td>{{ u.fullname or '-' }}</td>
-          <td>{{ u.email or '-' }}</td>
+        <tr
+          data-user-id="{{ u.id }}"
+          data-role="{{ u.role or 'user' }}"
+          data-active="{{ '1' if u.is_active else '0' }}"
+        >
           <td>
-            <span class="badge {{ 'badge-admin' if u.role == 'admin' else 'badge-user' }}">{{ u.role or 'user' }}</span>
+            <div class="user-info">
+              <div class="user-avatar">{{ (u.username or '?')[:1]|upper }}</div>
+              <div class="user-details">
+                <div class="user-name">{{ u.username }}</div>
+                <div class="user-email">{{ u.email or '-' }}</div>
+              </div>
+            </div>
           </td>
-          <td><span class="badge badge-user">{{ (u.plan or 'free')|upper }}</span></td>
-          <td>{{ 'Hoạt động' if u.is_active else 'Bị khóa' }}</td>
-          <td>{{ u.created_at }}</td>
+          <td>{{ u.fullname or '-' }}</td>
           <td>
-            <form method="POST" action="{{ url_for('users.set_user_plan') }}" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+            <span class="role-badge {{ 'role-badge-admin' if u.role == 'admin' else 'role-badge-user' }}">
+              {{ (u.role or 'user')|upper }}
+            </span>
+          </td>
+          <td>
+            <span class="plan-pill plan-{{ (u.plan or 'free')|lower }}">{{ (u.plan or 'free')|upper }}</span>
+          </td>
+          <td>
+            <span class="status-badge {{ 'status-badge-active' if u.is_active else 'status-badge-inactive' }}">
+              {{ 'Hoạt động' if u.is_active else 'Bị khóa' }}
+            </span>
+          </td>
+          <td class="created-at">{{ u.created_at }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('users.set_user_plan') }}" class="plan-form">
               <input type="hidden" name="user_id" value="{{ u.id }}" />
-              <select name="plan" class="select-pro" style="min-width: 120px">
+              <select name="plan" class="plan-select" aria-label="Chọn gói">
                 <option value="free" {{ 'selected' if (u.plan or 'free') == 'free' else '' }}>FREE</option>
                 <option value="basic" {{ 'selected' if (u.plan or '') == 'basic' else '' }}>BASIC</option>
                 <option value="pro" {{ 'selected' if (u.plan or '') == 'pro' else '' }}>PRO</option>
                 <option value="enterprise" {{ 'selected' if (u.plan or '') == 'enterprise' else '' }}>ENTERPRISE</option>
               </select>
-              <button type="submit" class="btn-primary" style="padding: 8px 12px">Cập nhật</button>
+              <button type="submit" class="plan-submit">Cập nhật</button>
             </form>
           </td>
-          <td style="min-width:120px">
-            <button class="btn-secondary" onclick="showUserDetail({{ u.id }})">Xem</button>
-            <button class="btn-warning" onclick="lockUnlockUser({{ u.id }}, {{ 'true' if u.is_active else 'false' }})">{{ 'Khóa' if u.is_active else 'Mở khóa' }}</button>
-            <button class="btn-danger" onclick="deleteUser({{ u.id }})">Xóa</button>
+          <td>
+            <div class="action-buttons">
+              <button
+                type="button"
+                class="action-btn action-btn-view"
+                data-action="view"
+                title="Xem chi tiết"
+                aria-label="Xem chi tiết"
+              >
+                👁️
+              </button>
+              <button
+                type="button"
+                class="action-btn action-btn-lock"
+                data-action="toggle"
+                title="{{ 'Khóa' if u.is_active else 'Mở khóa' }}"
+                aria-label="{{ 'Khóa' if u.is_active else 'Mở khóa' }}"
+              >
+                {{ '🔒' if u.is_active else '🔓' }}
+              </button>
+              <button
+                type="button"
+                class="action-btn action-btn-delete"
+                data-action="delete"
+                title="Xóa"
+                aria-label="Xóa"
+              >
+                🗑️
+              </button>
+            </div>
           </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="10" style="text-align: center">Không có dữ liệu.</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-user-slash"></i>
+    <h2>Chưa có người dùng</h2>
+    <p>Hiện tại chưa có dữ liệu để hiển thị.</p>
+  </div>
+  {% endif %}
+</div>
 
-  <!-- Modal xem chi tiết user (khung sẵn sàng) -->
-  <div id="userDetailModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="close" onclick="closeUserDetail()">&times;</span>
-      <h2>Thông tin người dùng</h2>
-      <div id="userDetailBody">(Đang phát triển)</div>
+<div class="modal-backdrop" id="userModalBackdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="userModalTitle">Thông tin người dùng</div>
+      <button type="button" class="modal-close" id="userModalClose" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body" id="userModalBody">Đang tải...</div>
+    <div class="modal-actions">
+      <button type="button" class="users-filter-btn" id="userModalOk">Đóng</button>
     </div>
   </div>
-
-  <!-- Khung xác nhận thao tác (khóa, xóa) -->
-  <div id="confirmActionModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="close" onclick="closeConfirmAction()">&times;</span>
-      <h2>Xác nhận thao tác</h2>
-      <div id="confirmActionBody">(Đang phát triển)</div>
-      <button class="btn-primary">Xác nhận</button>
-      <button class="btn-secondary" onclick="closeConfirmAction()">Hủy</button>
-    </div>
-  </div>
-</section>
+</div>
 {% endblock %}
+
 {% block extra_js %}
 <script>
-function showUserDetail(userId) {
-  fetch(`/users/detail/${userId}`)
-    .then(res => res.json())
-    .then(data => {
-      let html = '';
-      if (data && data.id) {
-        html = `<ul style='list-style:none;padding:0;'>
-          <li><b>ID:</b> ${data.id}</li>
-          <li><b>Tên đăng nhập:</b> ${data.username}</li>
-          <li><b>Họ tên:</b> ${data.fullname || '-'}</li>
-          <li><b>Email:</b> ${data.email || '-'}</li>
-          <li><b>Vai trò:</b> ${data.role}</li>
-          <li><b>Gói:</b> ${data.plan}</li>
-          <li><b>Trạng thái:</b> ${data.is_active ? 'Hoạt động' : 'Bị khóa'}</li>
-          <li><b>Ngày tạo:</b> ${data.created_at}</li>
-        </ul>`;
-      } else {
-        html = 'Không tìm thấy thông tin người dùng.';
-      }
-      document.getElementById('userDetailBody').innerHTML = html;
-      document.getElementById('userDetailModal').style.display = 'block';
-    });
-}
-function closeUserDetail() {
-  document.getElementById('userDetailModal').style.display = 'none';
-}
+  (function () {
+    const searchEl = document.getElementById('usersSearch');
+    const roleEl = document.getElementById('roleFilter');
+    const statusEl = document.getElementById('statusFilter');
+    const clearBtn = document.getElementById('clearFilters');
+    const table = document.getElementById('usersTable');
 
-function lockUnlockUser(userId, isActive) {
-  const url = isActive ? `/users/lock/${userId}` : `/users/unlock/${userId}`;
-  fetch(url, {method: 'POST'})
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        location.reload();
-      } else {
-        alert('Thao tác thất bại!');
-      }
-    });
-}
+    const statTotal = document.getElementById('statTotal');
+    const statAdmins = document.getElementById('statAdmins');
+    const statActive = document.getElementById('statActive');
+    const statLocked = document.getElementById('statLocked');
 
-function deleteUser(userId) {
-  if (!confirm('Bạn có chắc muốn xóa user này?')) return;
-  fetch(`/users/delete/${userId}`, {method: 'POST'})
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        location.reload();
-      } else {
-        alert('Xóa thất bại!');
-      }
-    });
-}
+    const modalBackdrop = document.getElementById('userModalBackdrop');
+    const modalBody = document.getElementById('userModalBody');
+    const modalClose = document.getElementById('userModalClose');
+    const modalOk = document.getElementById('userModalOk');
 
-function closeConfirmAction() {
-  document.getElementById('confirmActionModal').style.display = 'none';
-}
+    function openModal(html) {
+      modalBody.innerHTML = html;
+      modalBackdrop.hidden = false;
+    }
+
+    function closeModal() {
+      modalBackdrop.hidden = true;
+    }
+
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+    modalClose.addEventListener('click', closeModal);
+    modalOk.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modalBackdrop.hidden) closeModal();
+    });
+
+    function getRows() {
+      if (!table) return [];
+      return Array.from(table.querySelectorAll('tbody tr'));
+    }
+
+    async function fetchJson(url, options) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      try {
+        const res = await fetch(url, {
+          credentials: 'same-origin',
+          signal: controller.signal,
+          ...(options || {}),
+        });
+
+        let data = null;
+        try {
+          data = await res.json();
+        } catch (e) {
+          data = null;
+        }
+
+        return { res, data, ok: res.ok && !!data };
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    function computeStats(rows) {
+      const total = rows.length;
+      const admins = rows.filter((r) => (r.dataset.role || '').toLowerCase() === 'admin').length;
+      const active = rows.filter((r) => r.dataset.active === '1').length;
+      const locked = rows.filter((r) => r.dataset.active === '0').length;
+      statTotal.textContent = String(total);
+      statAdmins.textContent = String(admins);
+      statActive.textContent = String(active);
+      statLocked.textContent = String(locked);
+    }
+
+    function applyFilters() {
+      const q = (searchEl.value || '').trim().toLowerCase();
+      const role = (roleEl.value || '').trim().toLowerCase();
+      const status = (statusEl.value || '').trim().toLowerCase();
+
+      let visible = 0;
+      getRows().forEach((row) => {
+        const hay = row.innerText.toLowerCase();
+        const matchQ = !q || hay.includes(q);
+        const matchRole = !role || (row.dataset.role || '').toLowerCase() === role;
+        const isActive = row.dataset.active === '1';
+        const matchStatus =
+          !status ||
+          (status === 'active' && isActive) ||
+          (status === 'locked' && !isActive);
+
+        const show = matchQ && matchRole && matchStatus;
+        row.style.display = show ? '' : 'none';
+        if (show) visible += 1;
+      });
+
+      // Stats: keep total based on all rows (not filtered)
+      // Optional: could show visible count somewhere later.
+      return visible;
+    }
+
+    if (searchEl) {
+      ['input', 'change'].forEach((evt) => searchEl.addEventListener(evt, applyFilters));
+    }
+    if (roleEl) roleEl.addEventListener('change', applyFilters);
+    if (statusEl) statusEl.addEventListener('change', applyFilters);
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        searchEl.value = '';
+        roleEl.value = '';
+        statusEl.value = '';
+        applyFilters();
+      });
+    }
+
+    // Actions
+    if (table) {
+      table.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const row = btn.closest('tr');
+        if (!row) return;
+        const userId = row.dataset.userId;
+        const action = btn.dataset.action;
+        const isActive = row.dataset.active === '1';
+
+        try {
+          if (action === 'view') {
+            openModal('Đang tải...');
+            let result;
+            try {
+              result = await fetchJson(`/users/detail/${userId}`);
+            } catch (err) {
+              console.error(err);
+              openModal(
+                `<div class="modal-error">Không thể kết nối tới máy chủ.</div>` +
+                  `<div style="margin-top:12px;color:var(--text-secondary)">` +
+                  `Gợi ý: kiểm tra terminal Flask còn chạy không, rồi reload trang.` +
+                  `</div>`,
+              );
+              return;
+            }
+
+            const { res, data } = result;
+            if (!res.ok || !data || !data.success) {
+              const msg = data && data.error ? data.error : `HTTP ${res.status}`;
+              openModal(
+                `<div class="modal-error">Không thể tải thông tin người dùng (${msg}).</div>` +
+                  `<div style="margin-top:12px;color:var(--text-secondary)">` +
+                  `Gợi ý: xem log server để biết lỗi chi tiết.` +
+                  `</div>`,
+              );
+              return;
+            }
+            const u = data.user;
+            const html = `
+              <div class="user-detail-grid">
+                <div><div class="kv-label">ID</div><div class="kv-value">${u.id}</div></div>
+                <div><div class="kv-label">Username</div><div class="kv-value">${u.username}</div></div>
+                <div><div class="kv-label">Họ tên</div><div class="kv-value">${u.fullname || '-'}</div></div>
+                <div><div class="kv-label">Email</div><div class="kv-value">${u.email || '-'}</div></div>
+                <div><div class="kv-label">Vai trò</div><div class="kv-value">${(u.role || 'user').toUpperCase()}</div></div>
+                <div><div class="kv-label">Gói</div><div class="kv-value">${(u.plan || 'free').toUpperCase()}</div></div>
+                <div><div class="kv-label">Trạng thái</div><div class="kv-value">${u.is_active ? 'Hoạt động' : 'Bị khóa'}</div></div>
+                <div><div class="kv-label">Ngày tạo</div><div class="kv-value">${u.created_at || ''}</div></div>
+              </div>
+            `;
+            openModal(html);
+            return;
+          }
+
+          if (action === 'toggle') {
+            const ok = confirm(isActive ? 'Khóa người dùng này?' : 'Mở khóa người dùng này?');
+            if (!ok) return;
+            const url = isActive ? `/users/lock/${userId}` : `/users/unlock/${userId}`;
+            const res = await fetch(url, { method: 'POST' });
+            const data = await res.json();
+            if (!res.ok || !data || !data.success) {
+              alert(data && data.error ? data.error : 'Thao tác thất bại.');
+              return;
+            }
+            location.reload();
+            return;
+          }
+
+          if (action === 'delete') {
+            const ok = confirm('Bạn có chắc muốn xóa user này? Hành động không thể hoàn tác.');
+            if (!ok) return;
+            const res = await fetch(`/users/delete/${userId}`, { method: 'POST' });
+            const data = await res.json();
+            if (!res.ok || !data || !data.success) {
+              alert(data && data.error ? data.error : 'Xóa thất bại.');
+              return;
+            }
+            row.remove();
+            computeStats(getRows());
+            applyFilters();
+            return;
+          }
+        } catch (err) {
+          console.error(err);
+          openModal(
+            `<div class="modal-error">Có lỗi xảy ra khi xử lý thao tác.</div>` +
+              `<div style="margin-top:12px;color:var(--text-secondary)">` +
+              `Gợi ý: reload trang và thử lại.` +
+              `</div>`,
+          );
+        }
+      });
+    }
+
+    // Init
+    computeStats(getRows());
+    applyFilters();
+  })();
 </script>
 {% endblock %}

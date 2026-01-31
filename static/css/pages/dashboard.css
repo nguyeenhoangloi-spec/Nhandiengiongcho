@@ -497,7 +497,19 @@ html[data-theme="dark"] .activity-item {
 }
 
 html[data-theme="dark"] .activity-breed {
-  color: var(--gray-100);
+  color: var(--text);
+}
+
+html[data-theme="dark"] .activity-sub {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .activity-empty h3 {
+  color: var(--text);
+}
+
+html[data-theme="dark"] .activity-empty p {
+  color: var(--text-secondary);
 }
 
 .activity-conf {
@@ -598,6 +610,15 @@ html[data-theme="dark"] .activity-breed {
   color: var(--gray-800);
   font-size: 0.9375rem;
   letter-spacing: 0.02em;
+}
+
+/* Dark mode: keep layout, fix low-contrast text ONLY in breeds section */
+html[data-theme="dark"] .breeds-section h2 {
+  color: #0f172a;
+}
+
+html[data-theme="dark"] .breeds-section .breed-name {
+  color: #334155;
 }
 
 /* ============================================

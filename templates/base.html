@@ -1,5 +1,9 @@
 <!doctype html>
-<html lang="vi" data-theme="{{ ui_theme }}">
+<html
+  lang="vi"
+  data-theme="{% if force_light_theme %}light{% else %}{{ ui_theme }}{% endif %}"
+  data-force-light="{% if force_light_theme %}1{% else %}0{% endif %}"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="color-scheme" content="light dark" />
@@ -8,8 +12,29 @@
       // Apply theme sớm để tránh flash
       (function () {
         try {
+          // Landing page (/) luôn dùng nền sáng, không liên quan theme khu vực bên trong.
+          var forceLight =
+            document.documentElement.getAttribute("data-force-light") === "1";
+          if (forceLight) {
+            document.documentElement.setAttribute("data-theme", "light");
+            return;
+          }
+
           var t = localStorage.getItem("theme");
-          if (t) document.documentElement.setAttribute("data-theme", t);
+          if (!t) {
+            t = document.documentElement.getAttribute("data-theme");
+          }
+          if (t === "auto") {
+            var prefersDark =
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches;
+            document.documentElement.setAttribute(
+              "data-theme",
+              prefersDark ? "dark" : "light",
+            );
+          } else if (t) {
+            document.documentElement.setAttribute("data-theme", t);
+          }
         } catch (e) {}
       })();
     </script>
@@ -24,9 +49,7 @@
   <body>
     <header class="navbar">
       <div class="nav-left">
-        <a class="brand" href="{{ url_for('home.index') }}"
-          >Nhận diện chó/mèo</a
-        >
+        <a class="brand" href="{{ url_for('home.index') }}">DogBreed.AI</a>
       </div>
       <nav class="nav-right">
         <!-- Đã bỏ nút Trang chủ -->

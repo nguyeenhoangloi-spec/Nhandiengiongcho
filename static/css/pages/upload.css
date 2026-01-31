@@ -427,6 +427,15 @@
   line-height: 1.6;
 }
 
+/* Dark mode: keep white cards, but force readable text colors */
+html[data-theme="dark"] .info-card h4 {
+  color: #0f172a;
+}
+
+html[data-theme="dark"] .info-card p {
+  color: #334155;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .page-header h1 {
