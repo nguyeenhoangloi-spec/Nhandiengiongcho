@@ -52,7 +52,22 @@ endblock %} {% block extra_css %}
             </span>
           </td>
           <td>{{ o.created_at }}</td>
-          <td>{{ o.confirmed_at or '-' }}</td>
+          <td>
+            <form
+              method="post"
+              action="{{ url_for('users.confirm_payment') }}"
+              style="display: inline"
+            >
+              <input type="hidden" name="order_id" value="{{ o.order_id }}" />
+              {% if o.status != 'paid' %}
+              <button type="submit" class="btn btn-success btn-sm">
+                Xác nhận đã nhận tiền
+              </button>
+              {% else %}
+              <span class="status-badge status-badge-active">Đã xác nhận</span>
+              {% endif %}
+            </form>
+          </td>
         </tr>
         {% else %}
         <tr>

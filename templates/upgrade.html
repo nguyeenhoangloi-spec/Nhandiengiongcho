@@ -4,7 +4,8 @@ block extra_css %}
   rel="stylesheet"
   href="{{ url_for('static', filename='css/pages/monetization.css') }}"
 />
-{% endblock %} {% block content %}
+{% endblock %} {% block content %} {% if current_plan == 'free' or not
+current_plan %}
 <div class="page-header monetization-header">
   <h1>🔒 Bạn đã hết lượt sử dụng</h1>
   <p>
@@ -12,6 +13,21 @@ block extra_css %}
     để tiếp tục.
   </p>
 </div>
+{% else %}
+<div
+  class="page-header monetization-header"
+  style="background: #e6ffe6; color: #1a7f37"
+>
+  <h1>
+    🎉 Bạn đang sử dụng gói
+    <span style="text-transform: uppercase">{{ current_plan }}</span>
+  </h1>
+  <p>
+    Bạn đã nâng cấp thành công. Hãy tận hưởng các tính năng của gói
+    <b>{{ current_plan|upper }}</b>!
+  </p>
+</div>
+{% endif %}
 
 <div class="monetization-card">
   <h2 class="upgrade-title">Chọn gói phù hợp</h2>

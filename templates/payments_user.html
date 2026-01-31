@@ -11,6 +11,22 @@ endblock %} {% block extra_css %}
     <div style="color: var(--text-secondary)">Các đơn bạn đã tạo (demo)</div>
   </div>
 
+  {# Hiển thị gói hiện tại và hạn sử dụng #}
+  <div style="margin-bottom: 1.5rem">
+    <div style="font-weight: bold; font-size: 1.1rem">
+      Gói hiện tại:
+      <span style="color: var(--primary)">
+        {{ quota_info.plan|upper if quota_info and quota_info.plan else 'FREE'
+        }}
+      </span>
+      {% if quota_info and quota_info.plan_expire %} (Hạn sử dụng:
+      <span style="color: var(--accent)"
+        >{{ quota_info.plan_expire.strftime('%d/%m/%Y %H:%M') }}</span
+      >) {% elif quota_info and quota_info.plan != 'free' %} (Không xác định
+      hạn) {% endif %}
+    </div>
+  </div>
+
   <div class="users-table-wrapper">
     <table class="users-table">
       <thead>

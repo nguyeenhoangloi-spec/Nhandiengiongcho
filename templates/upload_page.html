@@ -13,11 +13,10 @@ endblock %} {% block extra_css %}
   </p>
 </div>
 
-{% if quota_info %}
+{% if quota_info and quota_info.plan == 'free' %}
 <div class="quota-banner">
   <div class="quota-row">
     <div class="quota-title">Gói hiện tại: {{ quota_info.plan|upper }}</div>
-    {% if quota_info.plan == 'free' %}
     <div class="quota-badges">
       <span class="quota-badge"
         >Free: {{ quota_info.total_predictions }}/{{ quota_info.free_limit
@@ -34,19 +33,23 @@ endblock %} {% block extra_css %}
         }}</span
       >
     </div>
-    {% else %}
-    <div class="quota-badges">
-      <span class="quota-badge">Không giới hạn lượt nhận diện</span>
-    </div>
-    {% endif %}
   </div>
-  {% if quota_info.plan == 'free' and quota_info.remaining_free <= 0 %}
+  {% if quota_info.remaining_free <= 0 %}
   <div class="quota-hint">
     Hết lượt miễn phí: hãy
     <a href="{{ url_for('predict.watch_ad') }}">xem quảng cáo</a> để mở khóa
     thêm.
   </div>
   {% endif %}
+</div>
+{% elif quota_info and quota_info.plan in ['pro', 'enterprise', 'basic'] %}
+<div class="quota-banner">
+  <div class="quota-row">
+    <div class="quota-title">Gói hiện tại: {{ quota_info.plan|upper }}</div>
+    <div class="quota-badges">
+      <span class="quota-badge">Không giới hạn lượt nhận diện</span>
+    </div>
+  </div>
 </div>
 {% endif %}
 

@@ -15,7 +15,7 @@
       })();
     </script>
 
-    <title>{% block title %}Dashboard{% endblock %}</title>
+    <title>{% block title %}DogBreed.AI{% endblock %}</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/base.css') }}"
@@ -37,57 +37,65 @@
     <nav class="top-navbar">
       <div class="navbar-left">
         <span class="navbar-logo">🐕</span>
-        <span class="navbar-title">YOLOv8 Dashboard</span>
+        <span class="navbar-title">DogBreed.AI</span>
       </div>
 
-      <div class="navbar-center">
-        <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item"
-          ><i class="fa-solid fa-house"></i> Trang chủ</a
-        >
-        <a href="{{ url_for('predict.upload_page') }}" class="nav-item"
-          ><i class="fa-solid fa-paw"></i> Nhận diện</a
-        >
-        <a href="{{ url_for('history.history') }}" class="nav-item"
-          ><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử</a
-        >
-        <a href="{{ url_for('statistics.statistics') }}" class="nav-item"
-          ><i class="fa-solid fa-chart-bar"></i> Thống kê</a
-        >
-        {% if session.get('role') == 'admin' %}
-        <a href="{{ url_for('users.list_users') }}" class="nav-item"
-          ><i class="fa-solid fa-users"></i> Người dùng</a
-        >
-        <a href="{{ url_for('users.payments_list') }}" class="nav-item"
-          ><i class="fa-solid fa-receipt"></i> Thanh toán</a
-        >
-        {% endif %}
-        <a href="{{ url_for('settings.settings') }}" class="nav-item"
-          ><i class="fa-solid fa-gear"></i> Cài đặt</a
-        >
-        {% if session.get('user_id') and session.get('role') != 'admin' %}
-        <a href="{{ url_for('predict.upgrade') }}" class="nav-item"
-          ><i class="fa-solid fa-crown"></i> Gói</a
-        >
-        <a href="{{ url_for('predict.my_payments') }}" class="nav-item"
-          ><i class="fa-solid fa-receipt"></i> Thanh toán</a
-        >
-        {% endif %}
-      </div>
+      <div class="navbar-center"></div>
 
       <div class="navbar-right">
+        <div class="navbar-main-links">
+          <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item"
+            ><i class="fa-solid fa-house"></i> Trang chủ</a
+          >
+          <a href="{{ url_for('predict.upload_page') }}" class="nav-item"
+            ><i class="fa-solid fa-paw"></i> Nhận diện</a
+          >
+          <a href="{{ url_for('history.history') }}" class="nav-item"
+            ><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử</a
+          >
+          <a href="{{ url_for('statistics.statistics') }}" class="nav-item"
+            ><i class="fa-solid fa-chart-bar"></i> Thống kê</a
+          >
+        </div>
         {% if session.get('user_id') %}
-        <span class="user-info"
-          ><i class="fa-solid fa-user-circle"></i> {{ session.get('username')
-          }}</span
-        >
-        {% if current_plan %}
-        <span class="user-info" style="opacity: 0.9">
-          <i class="fa-solid fa-crown"></i> {{ current_plan|upper }}
-        </span>
-        {% endif %}
-        <a href="{{ url_for('logout.logout') }}" class="nav-item logout-btn"
-          ><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a
-        >
+        <div class="user-dropdown-group">
+          <div class="user-dropdown">
+            <button class="user-dropdown-toggle">
+              <i class="fa-solid fa-user-circle"></i> {{ session.get('username')
+              }} {% if current_plan %}
+              <span class="user-plan"
+                ><i class="fa-solid fa-crown"></i> {{ current_plan|upper
+                }}</span
+              >
+              {% endif %}
+              <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="user-dropdown-menu">
+              <a class="dropdown-item" href="{{ url_for('predict.upgrade') }}">
+                <i class="fa-solid fa-crown"></i> Gói: {{ current_plan|upper }}
+              </a>
+              <a
+                class="dropdown-item"
+                href="{{ url_for('predict.my_payments') }}"
+              >
+                <i class="fa-solid fa-receipt"></i> Lịch sử thanh toán
+              </a>
+              <a
+                class="dropdown-item"
+                href="{{ url_for('settings.settings') }}"
+              >
+                <i class="fa-solid fa-gear"></i> Cài đặt
+              </a>
+              <div class="dropdown-divider"></div>
+              <a
+                class="dropdown-item dropdown-logout"
+                href="{{ url_for('logout.logout') }}"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+              </a>
+            </div>
+          </div>
+        </div>
         {% endif %}
       </div>
     </nav>

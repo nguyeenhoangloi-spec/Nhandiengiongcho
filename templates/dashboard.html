@@ -50,8 +50,8 @@ Diện Giống Chó{% endblock %} {% block content %}
 </div>
 
 <!-- Quick Actions -->
-<div class="dashboard-section">
-  <h2>⚡ Thao Tác Nhanh</h2>
+<div class="dashboard-section card">
+  <h2 class="section-title">⚡ Thao Tác Nhanh</h2>
   <div class="dashboard-grid">
     <div
       class="card card-hover"
@@ -132,9 +132,9 @@ Diện Giống Chó{% endblock %} {% block content %}
 </div>
 
 <!-- Recent Activity (Sample) -->
-<div class="dashboard-section">
-  <h2>📋 Hoạt Động Gần Đây</h2>
-  <div class="activity-card">
+<div class="dashboard-section card">
+  <h2 class="section-title">📋 Hoạt Động Gần Đây</h2>
+  <div class="activity-card card">
     {% if recent_predictions and recent_predictions|length > 0 %}
     <div class="activity-list">
       {% for pred in recent_predictions %}

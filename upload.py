@@ -101,8 +101,10 @@ def upload_page():
 			try:
 				quota = UserQuota.get_or_create(conn, user_id)
 				total_predictions = PredictionHistory.count_by_user(conn, user_id)
+				plan = quota.get("plan", "free")
 				quota_info = {
-					"plan": quota.get("plan", "free"),
+					"plan": plan,
+					"plan_expire": quota.get("plan_expire"),
 					"free_limit": UserQuota.FREE_PREDICTIONS,
 					"total_predictions": int(total_predictions or 0),
 					"remaining_free": max(0, UserQuota.FREE_PREDICTIONS - int(total_predictions or 0)),
@@ -111,6 +113,11 @@ def upload_page():
 					"ad_views_remaining": max(0, UserQuota.MAX_AD_VIEWS - int(quota.get("ad_views_used", 0))),
 					"ad_unlocks_remaining": int(quota.get("ad_unlocks_remaining", 0)),
 				}
+				# Nếu đã có gói pro/basic/enterprise thì không kiểm tra quota miễn phí/quảng cáo nữa
+				if plan in ("pro", "enterprise", "basic"):
+					quota_info["remaining_free"] = None
+					quota_info["ad_views_remaining"] = None
+					quota_info["ad_unlocks_remaining"] = None
 			finally:
 				conn.close()
 	except Exception:
@@ -138,6 +145,7 @@ def watch_ad():
 			total_predictions = PredictionHistory.count_by_user(conn, user_id)
 			quota_info = {
 				"plan": quota.get("plan", "free"),
+				"plan_expire": quota.get("plan_expire"),
 				"free_limit": UserQuota.FREE_PREDICTIONS,
 				"total_predictions": int(total_predictions or 0),
 				"ad_views_used": int(quota.get("ad_views_used", 0)),
@@ -365,8 +373,19 @@ def upgrade_buy():
 			plan = (order.get("plan") or "pro").strip().lower()
 			payment_method = (order.get("payment_method") or "qr").strip().lower()
 		# Demo mapping: basic/pro/enterprise đều không bị chặn bởi ads nữa.
-		# (Nếu bạn muốn hạn mức theo tháng cho basic, mình sẽ thêm counter theo tháng.)
-		UserQuota.set_plan(conn, user_id, plan)
+		# Khi admin xác nhận, cập nhật thời hạn gói cho user
+		from datetime import datetime, timedelta
+		plan_expire = None
+		now = datetime.now()
+		if plan == "pro":
+			plan_expire = now + timedelta(days=30)
+		elif plan == "enterprise":
+			plan_expire = now + timedelta(days=90)
+		elif plan == "basic":
+			plan_expire = now + timedelta(days=7)
+		else:
+			plan_expire = None
+		UserQuota.set_plan(conn, user_id, plan, plan_expire)
 		if pending:
 			PaymentOrder.mark_paid(conn, order_id)
 		# Clear pending payment
@@ -393,14 +412,21 @@ def my_payments():
 		return redirect(url_for("login.login"))
 
 	conn = None
+	quota_info = {}
+	orders = []
 	try:
 		conn = get_connection()
-		orders = PaymentOrder.list_by_user(conn, user_id, limit=50)
+		orders = PaymentOrder.list_by_user(conn, user_id, limit=50) or []
+		quota = UserQuota.get_or_create(conn, user_id)
+		quota_info = {
+			"plan": quota.get("plan", "free"),
+			"plan_expire": quota.get("plan_expire"),
+		}
 	finally:
 		if conn:
 			conn.close()
 
-	return render_template("payments_user.html", orders=orders)
+	return render_template("payments_user.html", orders=orders, quota_info=quota_info)
 
 
 def allowed_file(filename: str) -> bool:

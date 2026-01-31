@@ -74,30 +74,14 @@ block extra_css %}
     </div>
 
     <div class="payment-right">
-      <h2 class="pay-title">Xác nhận</h2>
+      <h2 class="pay-title">Trạng thái đơn</h2>
       <p class="pay-sub">
-        Sau khi thanh toán, bấm xác nhận để kích hoạt gói (demo).
+        Đơn thanh toán của bạn đang chờ admin xác nhận. Vui lòng đợi trong giây
+        lát!
       </p>
-
-      <form
-        method="post"
-        action="{{ url_for('predict.upgrade_buy') }}"
-        class="confirm-form"
-      >
-        <input type="hidden" name="order_id" value="{{ order_id }}" />
-        <div class="ad-actions">
-          <a class="btn-outline" href="{{ url_for('predict.upgrade') }}"
-            >← Đổi gói</a
-          >
-          <button class="btn-primary" type="submit">
-            ✅ Tôi đã thanh toán
-          </button>
-        </div>
-      </form>
-
       <div class="ad-note">
-        Lưu ý: QR là VietQR/EMVCo. Luồng xác nhận vẫn là demo (chưa có callback
-        tự động).
+        Lưu ý: QR là VietQR/EMVCo. Luồng xác nhận sẽ được admin kiểm tra thủ
+        công.
       </div>
     </div>
   </div>

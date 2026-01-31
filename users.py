@@ -89,6 +89,58 @@ def payments_list():
     return render_template("payments_admin.html", orders=orders)
 
 
+@users_bp.route("/payments/confirm", methods=["POST"])
+def confirm_payment():
+    if not require_admin():
+        return redirect(url_for("login.login"))
+    order_id = (request.form.get("order_id") or "").strip()
+    if not order_id:
+        flash("Thiếu mã đơn.", "error")
+        return redirect(url_for("users.payments_list"))
+    conn = None
+    try:
+        conn = get_connection()
+        ok = PaymentOrder.mark_paid(conn, order_id)
+        # --- Ưu tiên gói cao nhất còn hạn khi xác nhận đơn ---
+        if ok:
+            from datetime import datetime, timedelta
+            # Lấy user_id từ đơn vừa xác nhận
+            order = PaymentOrder.get_by_order_id(conn, order_id)
+            user_id = order["user_id"] if order else None
+            if user_id:
+                # Lấy tất cả đơn PAID của user, mới nhất trước
+                all_orders = PaymentOrder.list_by_user(conn, user_id, limit=20)
+                # Ưu tiên đơn có plan cao nhất, mới nhất
+                plan_priority = {"enterprise": 3, "pro": 2, "basic": 1, "free": 0}
+                best_order = None
+                for o in all_orders:
+                    if o["status"] == "paid":
+                        if not best_order or plan_priority.get(o["plan"], 0) > plan_priority.get(best_order["plan"], 0):
+                            best_order = o
+                if best_order:
+                    plan = best_order["plan"]
+                    now = datetime.now()
+                    if plan == "pro":
+                        plan_expire = now + timedelta(days=30)
+                    elif plan == "enterprise":
+                        plan_expire = now + timedelta(days=90)
+                    elif plan == "basic":
+                        plan_expire = now + timedelta(days=7)
+                    else:
+                        plan_expire = None
+                    UserQuota.set_plan(conn, user_id, plan, plan_expire)
+            flash(f"Đã xác nhận thanh toán cho đơn {order_id}.", "success")
+        else:
+            flash("Không thể xác nhận đơn (có thể đã xác nhận hoặc không tồn tại).", "error")
+    except Exception as e:
+        print(f"[ADMIN] confirm_payment error: {e}")
+        flash("Lỗi xác nhận đơn.", "error")
+    finally:
+        if conn:
+            conn.close()
+    return redirect(url_for("users.payments_list"))
+
+
 @users_bp.route("/set-plan", methods=["POST"])
 def set_user_plan():
     if not require_admin():

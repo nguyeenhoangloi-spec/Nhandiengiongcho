@@ -92,11 +92,20 @@ block extra_css %}
 
   <!-- Recent Activity -->
   <div class="chart-card">
-    <div class="chart-header">
-      <h3><i class="icon">🕒</i> Hoạt Động Gần Đây</h3>
-      <a href="{{ url_for('history.history') }}" class="view-all-link"
-        >Xem tất cả →</a
-      >
+    <div class="chart-header recent-activity-header">
+      <div class="activity-title-group">
+        <h3><i class="icon">🕒</i> Hoạt Động Gần Đây</h3>
+      </div>
+      <div class="activity-actions">
+        <button class="btn-refresh" title="Làm mới" onclick="location.reload()">
+          <i class="fa fa-rotate-right"></i>
+        </button>
+        <a
+          href="{{ url_for('history.history') }}"
+          class="btn-outline btn-view-all"
+          >Xem tất cả →</a
+        >
+      </div>
     </div>
     <div class="chart-body">
       {% if recent_predictions %}
