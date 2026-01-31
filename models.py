@@ -208,18 +208,17 @@ class UserQuota:
     @staticmethod
     def get_or_create(conn, user_id: int) -> Dict[str, Any]:
         """Lấy quota hoặc tạo mặc định nếu chưa có."""
-        # An toàn: đảm bảo bảng tồn tại (CREATE IF NOT EXISTS là idempotent)
         UserQuota.create_table(conn)
 
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT plan, ad_views_used, ad_unlocks_remaining FROM user_quota WHERE user_id = %s",
+                "SELECT plan, ad_views_used, ad_unlocks_remaining, plan_expire FROM user_quota WHERE user_id = %s",
                 (user_id,),
             )
             row = cur.fetchone()
             if not row:
                 cur.execute(
-                    "INSERT INTO user_quota (user_id) VALUES (%s) RETURNING plan, ad_views_used, ad_unlocks_remaining",
+                    "INSERT INTO user_quota (user_id) VALUES (%s) RETURNING plan, ad_views_used, ad_unlocks_remaining, plan_expire",
                     (user_id,),
                 )
                 conn.commit()
@@ -229,21 +228,34 @@ class UserQuota:
             "plan": row[0],
             "ad_views_used": int(row[1] or 0),
             "ad_unlocks_remaining": int(row[2] or 0),
+            "plan_expire": row[3],
         }
 
     @staticmethod
-    def set_plan(conn, user_id: int, plan: str) -> None:
+    def set_plan(conn, user_id: int, plan: str, plan_expire=None) -> None:
+        print(f"[DEBUG] set_plan: user_id={user_id}, plan={plan}, plan_expire={plan_expire}")
         UserQuota.create_table(conn)
         with conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT INTO user_quota (user_id, plan)
-                VALUES (%s, %s)
-                ON CONFLICT (user_id) DO UPDATE
-                SET plan = EXCLUDED.plan, updated_at = CURRENT_TIMESTAMP
-                """,
-                (user_id, plan),
-            )
+            if plan_expire:
+                cur.execute(
+                    """
+                    INSERT INTO user_quota (user_id, plan, plan_expire)
+                    VALUES (%s, %s, %s)
+                    ON CONFLICT (user_id) DO UPDATE
+                    SET plan = EXCLUDED.plan, plan_expire = EXCLUDED.plan_expire, updated_at = CURRENT_TIMESTAMP
+                    """,
+                    (user_id, plan, plan_expire),
+                )
+            else:
+                cur.execute(
+                    """
+                    INSERT INTO user_quota (user_id, plan)
+                    VALUES (%s, %s)
+                    ON CONFLICT (user_id) DO UPDATE
+                    SET plan = EXCLUDED.plan, updated_at = CURRENT_TIMESTAMP
+                    """,
+                    (user_id, plan),
+                )
             conn.commit()
 
     @staticmethod

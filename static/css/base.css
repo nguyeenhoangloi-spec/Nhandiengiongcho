@@ -1,3 +1,263 @@
+.top-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+.navbar-title {
+  font-weight: 900;
+  font-size: 2rem !important;
+  color: #fff;
+  margin-left: 12px;
+  letter-spacing: 1px;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.18),
+    0 1px 0 #2563eb;
+  line-height: 1.1;
+  font-family: "Segoe UI", "Arial", sans-serif;
+}
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.navbar-main-links {
+  display: flex;
+  gap: 16px;
+}
+.navbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex: 1;
+}
+.navbar-main-links {
+  display: flex;
+  gap: 16px;
+}
+.user-dropdown-menu .dropdown-item {
+  text-decoration: none !important;
+}
+.user-dropdown-menu .dropdown-item:hover {
+  text-decoration: none !important;
+}
+.dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 6px 0 6px 0;
+  border: none;
+}
+.dropdown-logout {
+  color: #ef4444;
+  font-weight: 600;
+}
+.dropdown-logout:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+/* User dropdown group */
+.user-dropdown-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-dropdown {
+  position: relative;
+}
+.user-dropdown-toggle {
+  background: #e0f2fe;
+  color: #2563eb;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+.user-dropdown-toggle:hover {
+  background: #bae6fd;
+  color: #1746a2;
+}
+.user-plan {
+  background: #f1f5f9;
+  color: #2563eb;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-left: 6px;
+  font-size: 0.98em;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.user-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  min-width: 180px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(30, 60, 120, 0.13);
+  z-index: 100;
+  padding: 8px 0;
+}
+.user-dropdown:hover .user-dropdown-menu,
+.user-dropdown:focus-within .user-dropdown-menu {
+  display: block;
+}
+.dropdown-item {
+  padding: 10px 18px;
+  color: #22223b;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dropdown-item:hover {
+  background: #f0f4ff;
+  color: #2563eb;
+}
+/* Logout button hover */
+.logout-btn {
+  border: 1.5px solid #2563eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #2563eb;
+  font-weight: 600;
+  padding: 7px 16px;
+  margin-left: 4px;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border 0.18s;
+}
+.logout-btn:hover {
+  background: #f0f4ff;
+  color: #1746a2;
+  border-color: #1746a2;
+}
+/* === UI/UX Professional Visual Hierarchy & Consistency (Global) === */
+.section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #22223b;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-outline {
+  background: #fff;
+  color: #2563eb;
+  border: 1.5px solid #2563eb;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-weight: 600;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border 0.18s;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-outline:hover {
+  background: #f0f4ff;
+  color: #1746a2;
+  border-color: #1746a2;
+}
+.btn-primary {
+  background: linear-gradient(90deg, #2563eb 60%, #13b0f5 100%);
+  color: #fff !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-size: 1.04em;
+  box-shadow: 0 2px 8px rgba(30, 60, 120, 0.08);
+  transition:
+    background 0.18s,
+    box-shadow 0.18s,
+    color 0.18s;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #1746a2 60%, #0ea5e9 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(30, 60, 120, 0.13);
+  text-decoration: none;
+}
+.card {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(30, 60, 120, 0.07);
+  padding: 28px;
+  background: #fff;
+  margin-bottom: 24px;
+}
+.flash-success {
+  background: #d1fae5;
+  color: #15803d;
+  border-left: 4px solid #22c55e;
+}
+.flash-warning {
+  background: #fef3c7;
+  color: #b45309;
+  border-left: 4px solid #f59e42;
+}
+.flash-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-left: 4px solid #ef4444;
+}
+.flash-info {
+  background: #dbeafe;
+  color: #2563eb;
+  border-left: 4px solid #2563eb;
+}
+
+/* Card spacing & section padding */
+.card,
+.dashboard-section,
+.stats-cards-pro,
+.activity-timeline,
+.no-data {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(30, 60, 120, 0.07);
+  background: #fff;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+}
+.stats-cards-pro {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.stat-card-pro {
+  flex: 1 1 0;
+  min-width: 180px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(30, 60, 120, 0.07);
+  background: #fff;
+  padding: 28px 18px;
+}
+.activity-actions {
+  gap: 12px;
+}
+.timeline-item {
+  margin-bottom: 18px;
+}
 /* ============================================
    BASE STYLES - Shared across all pages
    Design System & Common Components

@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS public.user_quota (
   ad_views_used INTEGER NOT NULL DEFAULT 0,
   ad_unlocks_remaining INTEGER NOT NULL DEFAULT 0,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  plan_expire TIMESTAMP NULL,
   FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
 
