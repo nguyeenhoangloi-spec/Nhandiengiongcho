@@ -1,3 +1,34 @@
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .stat-label,
+html[data-theme="dark"] .summary-content h3,
+html[data-theme="dark"] .summary-content p,
+html[data-theme="dark"] .chart-card h2,
+html[data-theme="dark"] .timeline-breed,
+html[data-theme="dark"] .timeline-time,
+html[data-theme="dark"] .no-data,
+html[data-theme="dark"] .chart-label,
+html[data-theme="dark"] .breed-name-chart,
+html[data-theme="dark"] .breed-details h4,
+html[data-theme="dark"] .breed-details .breed-count,
+html[data-theme="dark"] .breed-percentage {
+  color: #f3f4f6 !important;
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .stat-card-pro,
+html[data-theme="dark"] .chart-card,
+html[data-theme="dark"] .summary-card,
+html[data-theme="dark"] .top-breeds-table,
+html[data-theme="dark"] .accuracy-meter,
+html[data-theme="dark"] .timeline-item {
+  background: #182133 !important;
+  color: #f3f4f6 !important;
+}
+html[data-theme="dark"] .stat-value {
+  background: linear-gradient(90deg, #60a5fa, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 /* === UI/UX Professional Visual Hierarchy & Consistency === */
 .section-title {
   font-size: 1.35rem;

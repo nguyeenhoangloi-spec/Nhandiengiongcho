@@ -6,9 +6,22 @@ endblock %} {% block extra_css %}
 />
 {% endblock %} {% block content %}
 <section class="card">
-  <h1>Người dùng</h1>
+  <h1>Quản lý người dùng</h1>
   <p>Chỉ hiển thị với tài khoản quản trị.</p>
-  <!-- Đã xóa nút khởi tạo bảng ứng dụng -->
+  <div class="user-admin-toolbar" style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px; align-items:center">
+    <input type="text" class="form-control" placeholder="Tìm kiếm tên, email..." style="max-width:220px" />
+    <select class="form-control" style="max-width:140px">
+      <option value="">Tất cả vai trò</option>
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+    </select>
+    <select class="form-control" style="max-width:140px">
+      <option value="">Tất cả trạng thái</option>
+      <option value="active">Hoạt động</option>
+      <option value="locked">Bị khóa</option>
+    </select>
+    <button class="btn-primary" style="padding:8px 16px">Lọc</button>
+  </div>
   <div class="table-wrap">
     <table class="table">
       <thead>
@@ -22,6 +35,7 @@ endblock %} {% block extra_css %}
           <th>Trạng thái</th>
           <th>Ngày tạo</th>
           <th>Cấp gói</th>
+          <th>Thao tác</th>
         </tr>
       </thead>
       <tbody>
@@ -32,14 +46,9 @@ endblock %} {% block extra_css %}
           <td>{{ u.fullname or '-' }}</td>
           <td>{{ u.email or '-' }}</td>
           <td>
-            <span
-              class="badge {{ 'badge-admin' if u.role == 'admin' else 'badge-user' }}"
-              >{{ u.role or 'user' }}</span
-            >
+            <span class="badge {{ 'badge-admin' if u.role == 'admin' else 'badge-user' }}">{{ u.role or 'user' }}</span>
           </td>
-          <td>
-            <span class="badge badge-user">{{ (u.plan or 'free')|upper }}</span>
-          </td>
+          <td><span class="badge badge-user">{{ (u.plan or 'free')|upper }}</span></td>
           <td>{{ 'Hoạt động' if u.is_active else 'Bị khóa' }}</td>
           <td>{{ u.created_at }}</td>
           <td>
@@ -54,14 +63,99 @@ endblock %} {% block extra_css %}
               <button type="submit" class="btn-primary" style="padding: 8px 12px">Cập nhật</button>
             </form>
           </td>
+          <td style="min-width:120px">
+            <button class="btn-secondary" onclick="showUserDetail({{ u.id }})">Xem</button>
+            <button class="btn-warning" onclick="lockUnlockUser({{ u.id }}, {{ 'true' if u.is_active else 'false' }})">{{ 'Khóa' if u.is_active else 'Mở khóa' }}</button>
+            <button class="btn-danger" onclick="deleteUser({{ u.id }})">Xóa</button>
+          </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="9" style="text-align: center">Không có dữ liệu.</td>
+          <td colspan="10" style="text-align: center">Không có dữ liệu.</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+
+  <!-- Modal xem chi tiết user (khung sẵn sàng) -->
+  <div id="userDetailModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeUserDetail()">&times;</span>
+      <h2>Thông tin người dùng</h2>
+      <div id="userDetailBody">(Đang phát triển)</div>
+    </div>
+  </div>
+
+  <!-- Khung xác nhận thao tác (khóa, xóa) -->
+  <div id="confirmActionModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeConfirmAction()">&times;</span>
+      <h2>Xác nhận thao tác</h2>
+      <div id="confirmActionBody">(Đang phát triển)</div>
+      <button class="btn-primary">Xác nhận</button>
+      <button class="btn-secondary" onclick="closeConfirmAction()">Hủy</button>
+    </div>
+  </div>
 </section>
+{% endblock %}
+{% block extra_js %}
+<script>
+function showUserDetail(userId) {
+  fetch(`/users/detail/${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      let html = '';
+      if (data && data.id) {
+        html = `<ul style='list-style:none;padding:0;'>
+          <li><b>ID:</b> ${data.id}</li>
+          <li><b>Tên đăng nhập:</b> ${data.username}</li>
+          <li><b>Họ tên:</b> ${data.fullname || '-'}</li>
+          <li><b>Email:</b> ${data.email || '-'}</li>
+          <li><b>Vai trò:</b> ${data.role}</li>
+          <li><b>Gói:</b> ${data.plan}</li>
+          <li><b>Trạng thái:</b> ${data.is_active ? 'Hoạt động' : 'Bị khóa'}</li>
+          <li><b>Ngày tạo:</b> ${data.created_at}</li>
+        </ul>`;
+      } else {
+        html = 'Không tìm thấy thông tin người dùng.';
+      }
+      document.getElementById('userDetailBody').innerHTML = html;
+      document.getElementById('userDetailModal').style.display = 'block';
+    });
+}
+function closeUserDetail() {
+  document.getElementById('userDetailModal').style.display = 'none';
+}
+
+function lockUnlockUser(userId, isActive) {
+  const url = isActive ? `/users/lock/${userId}` : `/users/unlock/${userId}`;
+  fetch(url, {method: 'POST'})
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert('Thao tác thất bại!');
+      }
+    });
+}
+
+function deleteUser(userId) {
+  if (!confirm('Bạn có chắc muốn xóa user này?')) return;
+  fetch(`/users/delete/${userId}`, {method: 'POST'})
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert('Xóa thất bại!');
+      }
+    });
+}
+
+function closeConfirmAction() {
+  document.getElementById('confirmActionModal').style.display = 'none';
+}
+</script>
 {% endblock %}

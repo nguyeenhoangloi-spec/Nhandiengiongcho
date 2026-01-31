@@ -56,6 +56,11 @@
           <a href="{{ url_for('statistics.statistics') }}" class="nav-item"
             ><i class="fa-solid fa-chart-bar"></i> Thống kê</a
           >
+          {% if session.get('role') == 'admin' %}
+          <a href="{{ url_for('users.list_users') }}" class="nav-item">
+            <i class="fa-solid fa-users"></i> Quản lý người dùng
+          </a>
+          {% endif %}
         </div>
         {% if session.get('user_id') %}
         <div class="user-dropdown-group">

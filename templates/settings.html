@@ -141,15 +141,21 @@
 </div>
 
 <script>
-  // Theme change handler - sync with localStorage
+
+  // Khi chọn theme: chỉ đổi giao diện tạm thời (data-theme), KHÔNG lưu localStorage
+  let pendingTheme = document.getElementById('theme').value;
   document.getElementById('theme').addEventListener('change', function() {
-    const theme = this.value;
-    // Save to localStorage for early loading
-    try {
-      localStorage.setItem('theme', theme);
-    } catch(e) {}
-    // Apply immediately to html element
-    document.documentElement.setAttribute('data-theme', theme);
+    pendingTheme = this.value;
+    document.documentElement.setAttribute('data-theme', pendingTheme);
+  });
+
+  // Khi submit form (bấm Lưu): mới lưu localStorage và giữ theme đó cho lần sau
+  document.querySelector('.settings-form').addEventListener('submit', function(e) {
+    if (pendingTheme) {
+      try {
+        localStorage.setItem('theme', pendingTheme);
+      } catch(e) {}
+    }
   });
 
   function confirmClearHistory(e) {
